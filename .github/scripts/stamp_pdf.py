@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """
-Stamps PDFs with corpXiv metadata - arXiv style.
-- Sequential reference numbers (corpXiv:2501.00001v1)
-- Red vertical watermark on left edge
-- Footer on page 1
+Stamps PDFs with corpXiv ID - matching actual arXiv style.
+- Dark gray (#444444)
+- Times (serif) 18pt
+- Left margin, vertical
+- Format: corpXiv:2501.00001v1 [ai-systems] 1 Jan 2025
 """
 
 import sys
@@ -20,7 +21,6 @@ MANIFEST_PATH = Path('manifest.json')
 
 
 def load_manifest() -> dict:
-    """Load or create the manifest file."""
     if MANIFEST_PATH.exists():
         with open(MANIFEST_PATH, 'r') as f:
             return json.load(f)
@@ -28,78 +28,56 @@ def load_manifest() -> dict:
 
 
 def save_manifest(manifest: dict) -> None:
-    """Save the manifest file."""
     with open(MANIFEST_PATH, 'w') as f:
         json.dump(manifest, f, indent=2)
 
 
-def get_corpxiv_id(filepath: str, manifest: dict) -> tuple[str, str]:
-    """
-    Generate or retrieve corpXiv ID.
-    Returns (full_id, category)
-    Format: 2501.00001v1
-    """
+def get_corpxiv_id(filepath: str, manifest: dict) -> tuple[str, str, str]:
+    """Returns (id, category, date)"""
     path = Path(filepath)
     relative = str(path.relative_to('papers'))
-    category = path.parent.name  # e.g., 'ai-systems'
+    category = path.parent.name
     
-    # Check if already assigned
     if relative in manifest['papers']:
         entry = manifest['papers'][relative]
-        return entry['id'], category
+        return entry['id'], category, entry['submitted']
     
-    # Generate new ID
     now = datetime.now()
-    yymm = now.strftime('%y%m')  # e.g., '2501' for Jan 2025
+    yymm = now.strftime('%y%m')
     seq = manifest['next_number']
     corpxiv_id = f"{yymm}.{seq:05d}v1"
+    date_str = now.strftime('%Y-%m-%d')
     
-    # Save to manifest
     manifest['papers'][relative] = {
         'id': corpxiv_id,
         'category': category,
-        'submitted': now.strftime('%Y-%m-%d'),
+        'submitted': date_str,
         'filename': path.name
     }
     manifest['next_number'] = seq + 1
     
-    return corpxiv_id, category
+    return corpxiv_id, category, date_str
 
 
 def create_stamp(corpxiv_id: str, category: str, date_str: str, page_width: float, page_height: float) -> BytesIO:
-    """Create a PDF overlay with arXiv-style stamp."""
+    """Create arXiv-style vertical stamp."""
     buffer = BytesIO()
     c = canvas.Canvas(buffer, pagesize=(page_width, page_height))
     
-    # Format date like arXiv: "1 Jan 2025"
+    # Format date like arXiv: "7 Jan 2023"
     date_obj = datetime.strptime(date_str, '%Y-%m-%d')
     formatted_date = date_obj.strftime('%-d %b %Y')
     
-    # --- FOOTER (bottom of page 1) ---
-    margin = 40
-    y_position = 25
-    
-    # Draw line
-    c.setStrokeColor(HexColor('#999999'))
-    c.setLineWidth(0.5)
-    c.line(margin, y_position + 15, page_width - margin, y_position + 15)
-    
-    # Draw footer text
-    c.setFont("Helvetica", 7)
-    c.setFillColor(HexColor('#666666'))
-    
-    footer_text = f"corpXiv:{corpxiv_id} [{category}] {formatted_date} | github.com/corpXiv/corpXiv"
-    c.drawString(margin, y_position, footer_text)
-    
-    # --- VERTICAL WATERMARK (left edge, arXiv style) ---
+    # arXiv actual style: dark gray, Times (serif) 18pt
     c.saveState()
-    c.setFont("Helvetica-Bold", 8)
-    c.setFillColor(HexColor('#CC0000'))  # arXiv red
+    c.setFont("Times-Roman", 18)
+    c.setFillColor(HexColor('#444444'))  # Dark gray
     
+    # Format exactly like arXiv
     watermark_text = f"corpXiv:{corpxiv_id} [{category}] {formatted_date}"
     
-    # Rotate and position on left edge
-    c.translate(12, page_height / 2)
+    # Position: left edge, centered vertically, rotated 90 degrees
+    c.translate(18, page_height / 2)
     c.rotate(90)
     c.drawCentredString(0, 0, watermark_text)
     c.restoreState()
@@ -110,7 +88,6 @@ def create_stamp(corpxiv_id: str, category: str, date_str: str, page_width: floa
 
 
 def stamp_pdf(filepath: str, manifest: dict) -> None:
-    """Add corpXiv stamp to a PDF."""
     print(f"Stamping: {filepath}")
     
     reader = PdfReader(filepath)
@@ -120,25 +97,22 @@ def stamp_pdf(filepath: str, manifest: dict) -> None:
     page_width = float(first_page.mediabox.width)
     page_height = float(first_page.mediabox.height)
     
-    corpxiv_id, category = get_corpxiv_id(filepath, manifest)
-    date_str = manifest['papers'][str(Path(filepath).relative_to('papers'))]['submitted']
+    corpxiv_id, category, date_str = get_corpxiv_id(filepath, manifest)
     
     stamp_buffer = create_stamp(corpxiv_id, category, date_str, page_width, page_height)
     stamp_reader = PdfReader(stamp_buffer)
     stamp_page = stamp_reader.pages[0]
     
-    # Merge stamp onto first page
     first_page.merge_page(stamp_page)
     writer.add_page(first_page)
     
-    # Add remaining pages unchanged
     for page in reader.pages[1:]:
         writer.add_page(page)
     
     with open(filepath, 'wb') as f:
         writer.write(f)
     
-    print(f"Stamped: {filepath} -> corpXiv:{corpxiv_id} [{category}]")
+    print(f"Stamped: corpXiv:{corpxiv_id} [{category}]")
 
 
 def main():
