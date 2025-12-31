@@ -4,6 +4,10 @@
 
 arXiv for industry—where practitioners formalize rigorous thinking into papers, not slide decks.
 
+## Papers
+- [ben_button](papers/ai-systems/ben_button.pdf) — corpXiv:2512.00001v1 [ai-systems]
+
+
 ---
 
 ## What is corpXiv?
