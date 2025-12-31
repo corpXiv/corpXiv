@@ -33,13 +33,13 @@ jobs:
       - name: Stamp PDFs
         run: python .github/scripts/stamp_pdf.py ${{ steps.changed.outputs.files }}
       
-      - name: Commit stamped PDFs
+      - name: Commit stamped PDFs and README
         env:
           PAT: ${{ secrets.PAT }}
         run: |
           git config user.name "corpXiv Bot"
           git config user.email "bot@corpxiv.org"
           git remote set-url origin https://x-access-token:${PAT}@github.com/corpXiv/corpXiv.git
-          git add papers/ manifest.json
+          git add papers/ manifest.json README.md
           git diff --staged --quiet || git commit -m "Auto-stamp PDFs with corpXiv ID"
           git push
