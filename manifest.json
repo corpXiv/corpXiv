@@ -1,4 +1,11 @@
 {
-  "next_number": 1,
-  "papers": {}
+  "next_number": 2,
+  "papers": {
+    "ai-systems/ben_button.pdf": {
+      "id": "2512.00001v1",
+      "category": "ai-systems",
+      "submitted": "2025-12-31",
+      "filename": "ben_button.pdf"
+    }
+  }
 }
