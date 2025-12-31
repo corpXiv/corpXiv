@@ -40,6 +40,6 @@ jobs:
           git config user.name "corpXiv Bot"
           git config user.email "bot@corpxiv.org"
           git remote set-url origin https://x-access-token:${PAT}@github.com/corpXiv/corpXiv.git
-          git add papers/
+          git add papers/ manifest.json
           git diff --staged --quiet || git commit -m "Auto-stamp PDFs with corpXiv ID"
           git push
