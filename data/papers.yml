@@ -4,12 +4,12 @@
     - "Chalupa, Marko A. E."
   date: "2026-01-01"
   category: "ai-systems"
-  slug: "semantic-identity-drift"
+  slug: "semantic_identity_drift"
   abstract: >
     Modern decision systems may satisfy formal correctness criteria while nonetheless 
     undergoing a gradual transformation of their internal semantic identity. This paper 
     isolates and formalizes this phenomenon as semantic identity drift.
-  pdf: "semantic-identity-drift.pdf"
+  pdf: "semantic_identity_drift.pdf"
   hash: ""
 - id: "2512.00001v1"
   title: "The Benjamin Button Problem: Ashby's Constraint and the Agentic Enterprise"
