@@ -1,0 +1,128 @@
+name: "Extract Paper Metadata"
+
+on:
+  issues:
+    types: [opened, labeled]
+
+jobs:
+  extract:
+    if: contains(github.event.issue.labels.*.name, 'paper-submission')
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install pypdf reportlab pyyaml
+      
+      - name: Parse issue body
+        id: parse
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.issue.body;
+            
+            // Extract category from dropdown
+            const categoryMatch = body.match(/### Category\s*\n\s*(\S+)/);
+            const category = categoryMatch ? categoryMatch[1] : 'other';
+            
+            // Extract PDF URL (GitHub attachment or external link)
+            const pdfMatch = body.match(/https:\/\/[^\s\)]+\.pdf/i) || 
+                            body.match(/https:\/\/github\.com\/[^\s\)]+/);
+            const pdfUrl = pdfMatch ? pdfMatch[0] : null;
+            
+            if (!pdfUrl) {
+              core.setFailed('No PDF found in issue body');
+              return;
+            }
+            
+            core.setOutput('category', category);
+            core.setOutput('pdf_url', pdfUrl);
+            console.log(`Category: ${category}`);
+            console.log(`PDF URL: ${pdfUrl}`);
+      
+      - name: Download PDF
+        run: |
+          mkdir -p temp
+          curl -L -o temp/paper.pdf "${{ steps.parse.outputs.pdf_url }}"
+          ls -la temp/
+      
+      - name: Extract metadata
+        id: extract
+        run: |
+          cd $GITHUB_WORKSPACE
+          RESULT=$(python scripts/process_paper.py extract temp/paper.pdf)
+          echo "extraction<<EOF" >> $GITHUB_OUTPUT
+          echo "$RESULT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+      
+      - name: Comment with extracted metadata
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const extraction = JSON.parse(`${{ steps.extract.outputs.extraction }}`);
+            const category = '${{ steps.parse.outputs.category }}';
+            
+            const authors = extraction.authors.length > 0 
+              ? extraction.authors.join(', ') 
+              : '_Could not extract authors_';
+            
+            const abstract = extraction.abstract 
+              ? extraction.abstract.substring(0, 500) + (extraction.abstract.length > 500 ? '...' : '')
+              : '_Could not extract abstract_';
+            
+            const comment = `## 📋 Extracted Metadata
+            
+            I've extracted the following from your PDF. Please review:
+            
+            **Title:** ${extraction.title || '_Could not extract title_'}
+            
+            **Authors:** ${authors}
+            
+            **Abstract:**
+            > ${abstract}
+            
+            **Category:** \`${category}\`
+            
+            ---
+            
+            ### ✅ To confirm and publish
+            
+            Reply with **CONFIRM** if this looks correct.
+            
+            ### ✏️ To make corrections
+            
+            Reply with corrections in this format:
+            
+            \`\`\`
+            TITLE: Your corrected title
+            AUTHORS: Last1, First1; Last2, First2
+            ABSTRACT: Your corrected abstract
+            \`\`\`
+            
+            Only include fields you want to change.
+            
+            ---
+            _This is an automated extraction. Confidence: title=${extraction.confidence?.title || 'unknown'}, authors=${extraction.confidence?.authors || 'unknown'}, abstract=${extraction.confidence?.abstract || 'unknown'}_`;
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: comment
+            });
+            
+            // Add awaiting-confirmation label
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: ['awaiting-confirmation']
+            });

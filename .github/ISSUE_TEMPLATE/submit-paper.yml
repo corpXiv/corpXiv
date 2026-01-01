@@ -1,0 +1,63 @@
+name: "📄 Submit Paper"
+description: "Submit a paper to corpXiv"
+title: "[Paper] "
+labels: ["paper-submission"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Submit your paper to corpXiv
+        
+        Upload your PDF and select a category. We'll extract the title, authors, and abstract automatically.
+        
+        **Format requirements:** 2-column, Palatino typeface, LaTeX-compiled preferred.
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      description: Select the most appropriate category
+      options:
+        - ai-systems
+        - data-engineering
+        - ml-ops
+        - data-governance
+        - architecture
+        - enterprise-ai
+        - other
+    validations:
+      required: true
+
+  - type: textarea
+    id: pdf
+    attributes:
+      label: Paper PDF
+      description: |
+        Drag and drop your PDF here, or paste a direct link to the PDF.
+        
+        **Important:** The PDF must be publicly accessible if providing a link.
+      placeholder: "Drag & drop PDF here..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Additional notes (optional)
+      description: |
+        Anything we should know? E.g., preferred citation format, related papers, etc.
+      placeholder: "Optional..."
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Submission agreement
+      options:
+        - label: "This is my original work (or I have rights to submit it)"
+          required: true
+        - label: "I agree to license this paper under CC BY 4.0"
+          required: true
+        - label: "This paper has not been previously submitted to corpXiv"
+          required: true

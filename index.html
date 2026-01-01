@@ -1,16 +1,322 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>corpXiv - Enterprise Technology Archive</title>
-  <meta name="description" content="An open preprint archive for enterprise practitioners">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>corpXiv — Enterprise Technology Archive</title>
+  <meta name="description" content="An open preprint archive for enterprise practitioners. arXiv for industry.">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="corpXiv">
+  <meta property="og:description" content="An open preprint archive for enterprise practitioners">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://corpxiv.github.io/corpXiv/">
+  
+  <!-- Load js-yaml for parsing -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+  
+  <style>
+    :root {
+      --primary: #1a1a2e;
+      --accent: #4a6fa5;
+      --bg: #fafafa;
+      --text: #2d2d2d;
+      --border: #e0e0e0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+      line-height: 1.6;
+      color: var(--text);
+      background: var(--bg);
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    header {
+      border-bottom: 2px solid var(--primary);
+      padding-bottom: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    header h1 {
+      font-size: 2rem;
+      color: var(--primary);
+      font-weight: normal;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.25rem;
+    }
+    header p {
+      color: #666;
+      font-size: 1rem;
+    }
+    nav {
+      margin-top: 1rem;
+    }
+    nav a {
+      color: var(--accent);
+      margin-right: 1.5rem;
+      text-decoration: none;
+      font-size: 0.95rem;
+    }
+    nav a:hover { text-decoration: underline; }
+    
+    .submit-btn {
+      display: inline-block;
+      background: var(--accent);
+      color: white;
+      padding: 0.5rem 1rem;
+      text-decoration: none;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+    .submit-btn:hover { background: #3a5f95; color: white; }
+    
+    .search-box {
+      margin-bottom: 1.5rem;
+    }
+    .search-box input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: inherit;
+    }
+    .search-box input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    
+    .filters {
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+    }
+    .filters label {
+      margin-right: 0.5rem;
+      color: #666;
+    }
+    .filters select {
+      padding: 0.4rem 0.75rem;
+      font-family: inherit;
+      font-size: 0.9rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+    }
+    
+    .stats {
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 1rem;
+    }
+    
+    .paper-list {
+      list-style: none;
+    }
+    .paper-item {
+      padding: 1.25rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .paper-item:last-child { border-bottom: none; }
+    .paper-item h2 {
+      font-size: 1.1rem;
+      font-weight: normal;
+      margin-bottom: 0.25rem;
+      line-height: 1.4;
+    }
+    .paper-item h2 a { 
+      text-decoration: none; 
+      color: var(--primary);
+    }
+    .paper-item h2 a:hover { 
+      color: var(--accent);
+      text-decoration: underline; 
+    }
+    .paper-item .meta {
+      font-size: 0.85rem;
+      color: #666;
+      margin-bottom: 0.5rem;
+    }
+    .paper-item .meta .id {
+      font-family: monospace;
+      background: #eee;
+      padding: 0.1rem 0.3rem;
+      border-radius: 2px;
+    }
+    .paper-item .meta .category {
+      color: var(--accent);
+    }
+    .paper-item .abstract-preview {
+      font-size: 0.9rem;
+      color: #444;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 2rem;
+      color: #666;
+    }
+    
+    .empty {
+      text-align: center;
+      padding: 2rem;
+      color: #666;
+    }
+    
+    footer {
+      margin-top: 3rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.85rem;
+      color: #666;
+    }
+    footer a { color: var(--accent); }
+  </style>
 </head>
 <body>
-  <h1>corpXiv</h1>
-  <p>An open preprint archive for enterprise practitioners</p>
-  <h2>Papers</h2>
-  <ul>
-    <li><a href="/corpXiv/papers/ben_button/">The Benjamin Button Effect</a> — corpXiv:2512.00001v1</li>
-    <!-- add more -->
-  </ul>
+  <header>
+    <h1>corpXiv</h1>
+    <p>An open preprint archive for enterprise practitioners</p>
+    <nav>
+      <a href="#papers">Papers</a>
+      <a href="https://github.com/corpXiv/corpXiv">GitHub</a>
+      <a href="https://github.com/corpXiv/corpXiv/issues/new?template=submit-paper.yml" class="submit-btn">Submit Paper</a>
+    </nav>
+  </header>
+  
+  <main>
+    <div class="search-box">
+      <input type="text" id="search" placeholder="Search papers by title, author, or abstract...">
+    </div>
+    
+    <div class="filters">
+      <label for="category-filter">Category:</label>
+      <select id="category-filter">
+        <option value="">All categories</option>
+        <option value="ai-systems">AI Systems</option>
+        <option value="data-engineering">Data Engineering</option>
+        <option value="ml-ops">ML Ops</option>
+        <option value="data-governance">Data Governance</option>
+        <option value="architecture">Architecture</option>
+        <option value="enterprise-ai">Enterprise AI</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    
+    <p class="stats" id="stats"></p>
+    
+    <div id="paper-list-container">
+      <p class="loading">Loading papers...</p>
+    </div>
+  </main>
+  
+  <footer>
+    <p>All papers licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></p>
+    <p><em>"In a world of hot takes, papers endure."</em></p>
+  </footer>
+  
+  <script>
+    let allPapers = [];
+    
+    async function loadPapers() {
+      try {
+        const response = await fetch('_data/papers.yml');
+        const yamlText = await response.text();
+        allPapers = jsyaml.load(yamlText) || [];
+        renderPapers(allPapers);
+        updateStats(allPapers.length, allPapers.length);
+      } catch (error) {
+        console.error('Error loading papers:', error);
+        document.getElementById('paper-list-container').innerHTML = 
+          '<p class="empty">Unable to load papers. Please try again later.</p>';
+      }
+    }
+    
+    function renderPapers(papers) {
+      const container = document.getElementById('paper-list-container');
+      
+      if (papers.length === 0) {
+        container.innerHTML = '<p class="empty">No papers found matching your criteria.</p>';
+        return;
+      }
+      
+      // Sort by date descending
+      papers.sort((a, b) => new Date(b.date) - new Date(a.date));
+      
+      const html = `
+        <ul class="paper-list" id="paper-list">
+          ${papers.map(paper => `
+            <li class="paper-item">
+              <h2><a href="papers/${paper.category}/${paper.slug}/">${escapeHtml(paper.title)}</a></h2>
+              <div class="meta">
+                <span class="authors">${escapeHtml(paper.authors?.join(', ') || 'Unknown')}</span>
+                · <span class="date">${formatDate(paper.date)}</span>
+                · <span class="id">corpXiv:${paper.id}</span>
+                · <span class="category">${paper.category}</span>
+                · <a href="papers/${paper.category}/${paper.slug}/${paper.pdf}">PDF</a>
+              </div>
+              <p class="abstract-preview">${escapeHtml(paper.abstract || '')}</p>
+            </li>
+          `).join('')}
+        </ul>
+      `;
+      
+      container.innerHTML = html;
+    }
+    
+    function filterPapers() {
+      const query = document.getElementById('search').value.toLowerCase();
+      const category = document.getElementById('category-filter').value;
+      
+      const filtered = allPapers.filter(paper => {
+        const matchesSearch = !query || 
+          paper.title?.toLowerCase().includes(query) ||
+          paper.authors?.some(a => a.toLowerCase().includes(query)) ||
+          paper.abstract?.toLowerCase().includes(query);
+        
+        const matchesCategory = !category || paper.category === category;
+        
+        return matchesSearch && matchesCategory;
+      });
+      
+      renderPapers(filtered);
+      updateStats(filtered.length, allPapers.length);
+    }
+    
+    function updateStats(shown, total) {
+      const stats = document.getElementById('stats');
+      if (shown === total) {
+        stats.textContent = `${total} paper${total !== 1 ? 's' : ''} published`;
+      } else {
+        stats.textContent = `Showing ${shown} of ${total} papers`;
+      }
+    }
+    
+    function formatDate(dateStr) {
+      if (!dateStr) return '';
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+    }
+    
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+    
+    // Event listeners
+    document.getElementById('search').addEventListener('input', filterPapers);
+    document.getElementById('category-filter').addEventListener('change', filterPapers);
+    
+    // Load on page ready
+    loadPapers();
+  </script>
 </body>
 </html>
