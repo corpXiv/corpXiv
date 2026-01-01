@@ -1,0 +1,22 @@
+- id: 2601.00002v1
+  title: 'τDQ: Tensor Methods for Data Quality Validation in Business Intelligence
+    via GPU-Accelerated Completion and Decomposition'
+  authors:
+  - Iyer
+  - ' Rajesh'
+  date: '2026-01-01'
+  category: data-engineering
+  slug: dq-tensor-methods-for-data-quality-validation-in-business-in
+  abstract: 'We introduce τDQ (tau-DQ), a GPU-accelerated framework for detecting
+    missing and potentially inaccurate data in business intelligence through tensor
+    methods. Unlike conventional profiling that validates individual fields, τDQ identifies
+    struc- tural anomalies in multi-dimensional relationships. Tensor completion surfaces
+    gaps—expected combinations that are missing from the data. Tensor decomposition
+    flags suspicious values—records that exist but don’t fit the low-rank structure
+    of valid busi- ness data. Together, these techniques catch data quality failures
+    invisible to rule-based validation: the missing regional coverage, the transaction
+    that shouldn’t exist, the KPI attribution that violates hierarchy.τDQ achieves
+    25–30× speedup over Spark-RAPIDS while detecting 73% more structural defects than
+    traditional approaches.'
+  pdf: dq-tensor-methods-for-data-quality-validation-in-business-in.pdf
+  hash: 794e557d2bff13ba
