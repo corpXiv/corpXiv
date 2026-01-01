@@ -4,7 +4,7 @@
     - "Iyer, Rajesh S"
   date: "2025-12-31"
   category: "ai-systems"
-  slug: "ben-button"
+  slug: "ben_button"
   abstract: >
     The industry tried to be born old—deploying agents before earning the governance 
     to sustain them. For eighteen months, the narrative held that LLMs reason like 
@@ -20,5 +20,5 @@
     governance becomes mandatory. Crucially, GenAI itself enables the crossing: by 
     augmenting governance at computational frequency, it solves the frequentist problem 
     that makes agentic governance possible.
-  pdf: "ben-button.pdf"
+  pdf: "ben_button.pdf"
   hash: ""
