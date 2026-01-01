@@ -24,7 +24,7 @@ from reportlab.lib.colors import HexColor
 
 # Paths
 MANIFEST_PATH = Path('manifest.json')
-PAPERS_YAML_PATH = Path('_data/papers.yml')
+PAPERS_YAML_PATH = Path('data/papers.yml')
 TEMPLATES_PATH = Path('_templates')
 
 # Guardrails config
