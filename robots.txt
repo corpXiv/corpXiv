@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://corpxiv.github.io/corpXiv/sitemap.xml
