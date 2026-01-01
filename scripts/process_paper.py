@@ -6,12 +6,14 @@ corpXiv paper processing pipeline.
 - Stamps PDF with corpXiv ID
 - Generates Scholar-indexed landing page
 - Updates papers.yml
+- Regenerates sitemap.xml
 """
 
 import sys
 import json
 import re
 import hashlib
+import unicodedata
 import yaml
 from datetime import datetime
 from pathlib import Path
@@ -25,6 +27,7 @@ from reportlab.lib.colors import HexColor
 # Paths
 MANIFEST_PATH = Path('manifest.json')
 PAPERS_YAML_PATH = Path('data/papers.yml')
+SITEMAP_PATH = Path('sitemap.xml')
 TEMPLATES_PATH = Path('_templates')
 
 # Guardrails config
@@ -538,9 +541,42 @@ def add_to_papers_yaml(
     save_papers_yaml(papers)
 
 
+def generate_sitemap() -> None:
+    """Regenerate sitemap.xml from papers.yml."""
+    papers = load_papers_yaml()
+    today = datetime.now().strftime('%Y-%m-%d')
+    
+    sitemap = f'''<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://corpxiv.github.io/corpXiv/</loc>
+    <lastmod>{today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+'''
+    
+    for paper in papers:
+        category = paper.get('category', 'other')
+        slug = paper.get('slug', '')
+        date = paper.get('date', today)
+        
+        sitemap += f'''  <url>
+    <loc>https://corpxiv.github.io/corpXiv/papers/{category}/{slug}/</loc>
+    <lastmod>{date}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+'''
+    
+    sitemap += '</urlset>\n'
+    
+    SITEMAP_PATH.write_text(sitemap)
+    print("Sitemap regenerated")
+
+
 def title_to_slug(title: str) -> str:
     """Convert title to URL-friendly slug."""
-    import unicodedata
     # Normalize unicode
     slug = unicodedata.normalize('NFKD', title)
     # Lowercase
@@ -634,6 +670,9 @@ def process_paper(
     # Update manifest
     save_manifest(manifest)
     
+    # Regenerate sitemap
+    generate_sitemap()
+    
     return {
         'status': 'success',
         'corpxiv_id': corpxiv_id,
@@ -657,8 +696,8 @@ if __name__ == '__main__':
     import argparse
     
     parser = argparse.ArgumentParser(description='corpXiv paper processor')
-    parser.add_argument('command', choices=['extract', 'process'])
-    parser.add_argument('filepath', help='Path to PDF')
+    parser.add_argument('command', choices=['extract', 'process', 'sitemap'])
+    parser.add_argument('filepath', nargs='?', help='Path to PDF')
     parser.add_argument('--category', default='other', help='Paper category')
     parser.add_argument('--title', help='Override title')
     parser.add_argument('--authors', help='Override authors (comma-separated)')
@@ -667,10 +706,16 @@ if __name__ == '__main__':
     args = parser.parse_args()
     
     if args.command == 'extract':
+        if not args.filepath:
+            print("Error: filepath required for extract")
+            sys.exit(1)
         result = extract_only(args.filepath)
         print(json.dumps(result, indent=2))
     
     elif args.command == 'process':
+        if not args.filepath:
+            print("Error: filepath required for process")
+            sys.exit(1)
         authors = args.authors.split(',') if args.authors else None
         result = process_paper(
             filepath=args.filepath,
@@ -680,3 +725,6 @@ if __name__ == '__main__':
             abstract=args.abstract
         )
         print(json.dumps(result, indent=2))
+    
+    elif args.command == 'sitemap':
+        generate_sitemap()
