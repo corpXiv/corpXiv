@@ -224,7 +224,7 @@
     
     async function loadPapers() {
       try {
-        const response = await fetch('_data/papers.yml');
+        const response = await fetch('data/papers.yml');
         const yamlText = await response.text();
         allPapers = jsyaml.load(yamlText) || [];
         renderPapers(allPapers);
