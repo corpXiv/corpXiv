@@ -6,7 +6,6 @@ on:
 
 jobs:
   process:
-    # Only run on paper submissions awaiting confirmation, by the issue author
     if: |
       contains(github.event.issue.labels.*.name, 'awaiting-confirmation') &&
       github.event.comment.user.id == github.event.issue.user.id
@@ -21,10 +20,8 @@ jobs:
             const comment = context.payload.comment.body.trim();
             const upperComment = comment.toUpperCase();
             
-            // Check if this is a confirmation
             const isConfirm = upperComment.startsWith('CONFIRM');
             
-            // Parse any corrections
             let corrections = {};
             
             const titleMatch = comment.match(/TITLE:\s*(.+?)(?:\n|$)/i);
@@ -45,9 +42,6 @@ jobs:
             }
             
             core.setOutput('should_process', 'true');
-            core.setOutput('has_title', corrections.title ? 'true' : 'false');
-            core.setOutput('has_authors', corrections.authors ? 'true' : 'false');
-            core.setOutput('has_abstract', corrections.abstract ? 'true' : 'false');
             core.setOutput('title', corrections.title || '');
             core.setOutput('authors', corrections.authors || '');
             core.setOutput('abstract', corrections.abstract || '');
@@ -67,8 +61,7 @@ jobs:
       
       - name: Install dependencies
         if: steps.check.outputs.should_process == 'true'
-        run: |
-          pip install pypdf reportlab pyyaml
+        run: pip install pypdf reportlab pyyaml
       
       - name: Parse issue for PDF and category
         if: steps.check.outputs.should_process == 'true'
@@ -102,87 +95,46 @@ jobs:
           INPUT_AUTHORS: ${{ steps.check.outputs.authors }}
           INPUT_ABSTRACT: ${{ steps.check.outputs.abstract }}
           INPUT_CATEGORY: ${{ steps.parse.outputs.category }}
-          HAS_TITLE: ${{ steps.check.outputs.has_title }}
-          HAS_AUTHORS: ${{ steps.check.outputs.has_authors }}
-          HAS_ABSTRACT: ${{ steps.check.outputs.has_abstract }}
         run: |
-          # Build arguments array
-          ARGS="process temp/paper.pdf --category $INPUT_CATEGORY"
-          
-          if [ "$HAS_TITLE" = "true" ]; then
-            ARGS="$ARGS --title"
-          fi
-          if [ "$HAS_AUTHORS" = "true" ]; then
-            ARGS="$ARGS --authors"
-          fi
-          if [ "$HAS_ABSTRACT" = "true" ]; then
-            ARGS="$ARGS --abstract"
-          fi
-          
-          echo "Running process_paper.py with category: $INPUT_CATEGORY"
-          
-          # Run Python directly with env vars
-          RESULT=$(python3 << 'PYTHON_SCRIPT'
-import sys
-import os
-sys.path.insert(0, 'scripts')
-from process_paper import process_paper
-
-title = os.environ.get('INPUT_TITLE') or None
-authors = os.environ.get('INPUT_AUTHORS')
-authors = authors.split(',') if authors else None
-abstract = os.environ.get('INPUT_ABSTRACT') or None
-category = os.environ.get('INPUT_CATEGORY', 'other')
-
-import json
-result = process_paper(
-    filepath='temp/paper.pdf',
-    category=category,
-    title=title,
-    authors=authors,
-    abstract=abstract
-)
-print(json.dumps(result))
-PYTHON_SCRIPT
-)
-          
-          echo "result<<EOF" >> $GITHUB_OUTPUT
-          echo "$RESULT" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-          
-          # Check if successful
-          STATUS=$(echo "$RESULT" | python3 -c "import sys,json; print(json.loads(sys.stdin.read()).get('status','error'))")
+          python3 scripts/run_process.py > temp/result.json
+          cat temp/result.json
+          echo "result<<ENDOFRESULT" >> $GITHUB_OUTPUT
+          cat temp/result.json >> $GITHUB_OUTPUT
+          echo "ENDOFRESULT" >> $GITHUB_OUTPUT
+          STATUS=$(cat temp/result.json | python3 -c "import sys,json; print(json.loads(sys.stdin.read()).get('status','error'))")
           echo "status=$STATUS" >> $GITHUB_OUTPUT
       
       - name: Move PDF to papers directory
         if: steps.check.outputs.should_process == 'true' && steps.process.outputs.status == 'success'
+        env:
+          RESULT: ${{ steps.process.outputs.result }}
         run: |
-          RESULT='${{ steps.process.outputs.result }}'
           SLUG=$(echo "$RESULT" | python3 -c "import sys,json; print(json.loads(sys.stdin.read()).get('slug','paper'))")
           CATEGORY=$(echo "$RESULT" | python3 -c "import sys,json; print(json.loads(sys.stdin.read()).get('category','other'))")
-          
           mkdir -p "papers/$CATEGORY/$SLUG"
-          
-          # Copy stamped PDF with slug-based name
           cp temp/paper.pdf "papers/$CATEGORY/$SLUG/${SLUG}.pdf"
       
       - name: Commit and push
         if: steps.check.outputs.should_process == 'true' && steps.process.outputs.status == 'success'
+        env:
+          RESULT: ${{ steps.process.outputs.result }}
         run: |
           git config user.name "corpXiv Bot"
           git config user.email "bot@corpxiv.org"
-          
+          TITLE=$(echo "$RESULT" | python3 -c "import sys,json; print(json.loads(sys.stdin.read()).get('title','New paper')[:50])")
           git add -A
-          git commit -m "Add paper: $(echo '${{ steps.process.outputs.result }}' | python3 -c "import sys,json; print(json.loads(sys.stdin.read()).get('title','New paper')[:50])")"
+          git commit -m "Add paper: $TITLE"
           git push
       
       - name: Comment success
         if: steps.check.outputs.should_process == 'true' && steps.process.outputs.status == 'success'
         uses: actions/github-script@v7
+        env:
+          RESULT: ${{ steps.process.outputs.result }}
         with:
           script: |
-            const result = JSON.parse(`${{ steps.process.outputs.result }}`);
-            
+            const result = JSON.parse(process.env.RESULT);
+            const authors = result.authors ? result.authors.join(', ') : 'Unknown';
             const comment = `## 🎉 Paper Published!
             
             Your paper is now live on corpXiv.
@@ -195,7 +147,7 @@ PYTHON_SCRIPT
             
             **Citation:**
             \`\`\`
-            ${result.authors?.join(', ') || 'Unknown'}. "${result.title}". corpXiv:${result.corpxiv_id}, ${result.date}.
+            ${authors}. "${result.title}". corpXiv:${result.corpxiv_id}, ${result.date}.
             \`\`\`
             
             Thank you for contributing to corpXiv! 🙏`;
@@ -207,7 +159,6 @@ PYTHON_SCRIPT
               body: comment
             });
             
-            // Close issue and update labels
             await github.rest.issues.update({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -232,13 +183,13 @@ PYTHON_SCRIPT
       - name: Comment failure
         if: steps.check.outputs.should_process == 'true' && steps.process.outputs.status == 'error'
         uses: actions/github-script@v7
+        env:
+          RESULT: ${{ steps.process.outputs.result }}
         with:
           script: |
-            const result = JSON.parse(`${{ steps.process.outputs.result }}`);
-            
-            const errors = result.errors?.map(e => `- ❌ ${e}`).join('\n') || 'Unknown error';
-            const warnings = result.warnings?.map(w => `- ⚠️ ${w}`).join('\n') || '';
-            
+            const result = JSON.parse(process.env.RESULT);
+            const errors = result.errors ? result.errors.map(e => `- ❌ ${e}`).join('\n') : 'Unknown error';
+            const warnings = result.warnings ? result.warnings.map(w => `- ⚠️ ${w}`).join('\n') : '';
             const comment = `## ⚠️ Validation Failed
             
             Your paper could not be processed:
