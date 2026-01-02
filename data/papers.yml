@@ -1,40 +1,68 @@
-- id: "2601.00003v1"
-  title: "Semantic Identity Drift in Decision Systems under Formal Certification"
+- id: 2601.00003v1
+  title: 'Seven Verbs: A Theory of Human Judgment in AI-Augmented Production Systems'
   authors:
-    - "Chalupa, Marko A. E."
-  date: "2026-01-01"
-  category: "ai-systems"
-  slug: "semantic_identity_drift"
-  abstract: >
-    Modern decision systems may satisfy formal correctness criteria while nonetheless 
-    undergoing a gradual transformation of their internal semantic identity. This paper 
-    isolates and formalizes this phenomenon as semantic identity drift.
-  pdf: "semantic_identity_drift.pdf"
-  hash: ""
-- id: "2512.00001v1"
-  title: "The Benjamin Button Problem: Ashby's Constraint and the Agentic Enterprise"
+  - Iyer
+  - Rajesh
+  date: '2026-01-02'
+  category: enterprise-ai
+  slug: seven-verbs-a-theory-of-human-judgment-in-ai-augmented-produ
+  abstract: 'This paper proposes a seven-verb taxonomy for characterizing human work
+    in AI-augmented en- vironments. Through dual independent deriva- tion—from organizational
+    outputs backward and from irreducible human capacities forward—we identify seven
+    verbs that describe the complete set of human contributions that persist when
+    artificial intelligence handles execution: WANT (originate in- tent), INTERROGATE
+    (pressure test output), TASTE (judge quality), OWN (bear consequences), ATTEST
+    (stake reputation), WITNESS (provide presence), and CONVENE (align humans). We
+    validate this taxonomy against 1,000 occupations in the U.S. De- partment of Labor’s
+    O*NET database across 23 job families. All seven verbs load across all job families;
+    none are orphaned. The distribution reveals ATTEST (85%) and TASTE (68%) as near-universal,
+    INTER- ROGATE (47%) and OWN (44%) as core to decision roles, and WITNESS (27%),
+    WANT (25%), and CON- VENE (19%) as specialized human-presence func- tions. We
+    argue that the primary economic value of AI augmentation lies not in labor substitution
+    but in decision quality improvement: same people, same hours, much better decisions.
+    We further identify failure modes when each verb degrades and derive implications
+    for organizational design, governance, and workforce development.'
+  pdf: seven-verbs-a-theory-of-human-judgment-in-ai-augmented-produ.pdf
+  hash: 3134108bb631e11f
+- id: 2601.00003v1
+  title: Semantic Identity Drift in Decision Systems under Formal Certification
   authors:
-    - "Iyer, Rajesh S"
-  date: "2025-12-31"
-  category: "ai-systems"
-  slug: "ben_button"
-  abstract: >
-    The industry tried to be born old—deploying agents before earning the governance 
-    to sustain them. For eighteen months, the narrative held that LLMs reason like 
-    humans, therefore agents everywhere. That story skipped the hard parts: governance, 
-    credibility, institutional risk, coordination cost. Enterprises didn't reject agents. 
-    They priced them correctly. This paper argues for aging backwards: beginning with 
-    GenAI-augmented automation, graduating to agentic patterns, and instantiating agents 
-    only as a reward for earned governance. The theoretical foundation combines Ashby's 
-    Law of Requisite Variety with Blackman's insight on stability: you cannot govern a 
-    high-variety system with a low-variety regulator, and low-frequency governance cannot 
-    stably control high-frequency agent behavior. Together, these constraints define a 
-    regime boundary—below which deterministic governance suffices, above which agentic 
-    governance becomes mandatory. Crucially, GenAI itself enables the crossing: by 
-    augmenting governance at computational frequency, it solves the frequentist problem 
-    that makes agentic governance possible.
-  pdf: "ben_button.pdf"
-  hash: ""
+  - Chalupa, Marko A. E.
+  date: '2026-01-01'
+  category: ai-systems
+  slug: semantic_identity_drift
+  abstract: 'Modern decision systems may satisfy formal correctness criteria while
+    nonetheless  undergoing a gradual transformation of their internal semantic identity.
+    This paper  isolates and formalizes this phenomenon as semantic identity drift.
+
+    '
+  pdf: semantic_identity_drift.pdf
+  hash: ''
+- id: 2512.00001v1
+  title: 'The Benjamin Button Problem: Ashby''s Constraint and the Agentic Enterprise'
+  authors:
+  - Iyer, Rajesh S
+  date: '2025-12-31'
+  category: ai-systems
+  slug: ben_button
+  abstract: 'The industry tried to be born old—deploying agents before earning the
+    governance  to sustain them. For eighteen months, the narrative held that LLMs
+    reason like  humans, therefore agents everywhere. That story skipped the hard
+    parts: governance,  credibility, institutional risk, coordination cost. Enterprises
+    didn''t reject agents.  They priced them correctly. This paper argues for aging
+    backwards: beginning with  GenAI-augmented automation, graduating to agentic patterns,
+    and instantiating agents  only as a reward for earned governance. The theoretical
+    foundation combines Ashby''s  Law of Requisite Variety with Blackman''s insight
+    on stability: you cannot govern a  high-variety system with a low-variety regulator,
+    and low-frequency governance cannot  stably control high-frequency agent behavior.
+    Together, these constraints define a  regime boundary—below which deterministic
+    governance suffices, above which agentic  governance becomes mandatory. Crucially,
+    GenAI itself enables the crossing: by  augmenting governance at computational
+    frequency, it solves the frequentist problem  that makes agentic governance possible.
+
+    '
+  pdf: ben_button.pdf
+  hash: ''
 - id: 2601.00002v1
   title: 'τDQ: Tensor Methods for Data Quality Validation in Business Intelligence
     via GPU-Accelerated Completion and Decomposition'
