@@ -33,7 +33,7 @@ jobs:
             const authorsMatch = comment.match(/AUTHORS:\s*(.+?)(?:\n|$)/i);
             if (authorsMatch) corrections.authors = authorsMatch[1].trim();
             
-            const abstractMatch = comment.match(/ABSTRACT:\s*([\s\S]+?)(?:\n(?:TITLE|AUTHORS):|$)/i);
+            const abstractMatch = comment.match(/ABSTRACT:\s*([\s\S]+?)(?:\n(?:TITLE|AUTHORS|CONFIRM):|$)/i);
             if (abstractMatch) corrections.abstract = abstractMatch[1].trim();
             
             const hasCorrections = Object.keys(corrections).length > 0;
@@ -92,16 +92,17 @@ jobs:
       - name: Process paper
         if: steps.check.outputs.should_process == 'true'
         id: process
+        env:
+          CORRECTIONS: ${{ steps.check.outputs.corrections }}
+          CATEGORY: ${{ steps.parse.outputs.category }}
         run: |
-          CORRECTIONS='${{ steps.check.outputs.corrections }}'
-          CATEGORY='${{ steps.parse.outputs.category }}'
+          # Parse corrections from environment variable (avoids shell quoting issues)
+          TITLE=$(echo "$CORRECTIONS" | python3 -c "import sys,json; c=json.loads(sys.stdin.read()); print(c.get('title',''))" 2>/dev/null || echo "")
+          AUTHORS=$(echo "$CORRECTIONS" | python3 -c "import sys,json; c=json.loads(sys.stdin.read()); print(c.get('authors',''))" 2>/dev/null || echo "")
+          ABSTRACT=$(echo "$CORRECTIONS" | python3 -c "import sys,json; c=json.loads(sys.stdin.read()); print(c.get('abstract',''))" 2>/dev/null || echo "")
           
-          # Build command with any corrections
-          CMD="python scripts/process_paper.py process temp/paper.pdf --category $CATEGORY"
-          
-          TITLE=$(echo "$CORRECTIONS" | python -c "import sys,json; c=json.load(sys.stdin); print(c.get('title',''))" 2>/dev/null || echo "")
-          AUTHORS=$(echo "$CORRECTIONS" | python -c "import sys,json; c=json.load(sys.stdin); print(c.get('authors',''))" 2>/dev/null || echo "")
-          ABSTRACT=$(echo "$CORRECTIONS" | python -c "import sys,json; c=json.load(sys.stdin); print(c.get('abstract',''))" 2>/dev/null || echo "")
+          # Build command
+          CMD="python scripts/process_paper.py process temp/paper.pdf --category \"$CATEGORY\""
           
           if [ -n "$TITLE" ]; then
             CMD="$CMD --title \"$TITLE\""
@@ -121,15 +122,15 @@ jobs:
           echo "EOF" >> $GITHUB_OUTPUT
           
           # Check if successful
-          STATUS=$(echo "$RESULT" | python -c "import sys,json; print(json.load(sys.stdin).get('status',''))")
+          STATUS=$(echo "$RESULT" | python3 -c "import sys,json; print(json.loads(sys.stdin.read()).get('status',''))")
           echo "status=$STATUS" >> $GITHUB_OUTPUT
       
       - name: Move PDF to papers directory
         if: steps.check.outputs.should_process == 'true' && steps.process.outputs.status == 'success'
         run: |
           RESULT='${{ steps.process.outputs.result }}'
-          SLUG=$(echo "$RESULT" | python -c "import sys,json; print(json.load(sys.stdin).get('slug','paper'))")
-          CATEGORY=$(echo "$RESULT" | python -c "import sys,json; print(json.load(sys.stdin).get('category','other'))")
+          SLUG=$(echo "$RESULT" | python3 -c "import sys,json; print(json.loads(sys.stdin.read()).get('slug','paper'))")
+          CATEGORY=$(echo "$RESULT" | python3 -c "import sys,json; print(json.loads(sys.stdin.read()).get('category','other'))")
           
           mkdir -p "papers/$CATEGORY/$SLUG"
           
@@ -143,7 +144,7 @@ jobs:
           git config user.email "bot@corpxiv.org"
           
           git add -A
-          git commit -m "Add paper: $(echo '${{ steps.process.outputs.result }}' | python -c "import sys,json; print(json.load(sys.stdin).get('title','New paper')[:50])")"
+          git commit -m "Add paper: $(echo '${{ steps.process.outputs.result }}' | python3 -c "import sys,json; print(json.loads(sys.stdin.read()).get('title','New paper')[:50])")"
           git push
       
       - name: Comment success
