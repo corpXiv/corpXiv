@@ -1,3 +1,30 @@
+- id: 2601.00004v1
+  title: 'Engineering the Agentic Enterprise Semantic MVCC: Transactional State Management
+    for Agentic Systems'
+  authors:
+  - Iyer
+  - Rajesh
+  date: '2026-01-02'
+  category: architecture
+  slug: engineering-the-agentic-enterprise-semantic-mvcc-transaction
+  abstract: 'Agentic systems require coordination mechanisms that traditional database
+    concurrency control cannot provide. While Data MVCC resolves conflicts through
+    data representation—normalizing facts to canonical addresses where conflicts are
+    structural—agentic systems face a fundamentally different challenge: multiple
+    reasoning components reading the shared state and emitting intents that may not
+    both be permissible given system constraints. We introduce Semantic MVCC, a framework
+    for transactional state management in agentic systems. The core insight is that
+    agentic memory should serve as a reasoning surface where state, recall, inference,
+    and update are unified operations. We define Semantic ACID guarantees, present
+    a practical implementation based on append-only intent logging with deterministic
+    state derivation, and demonstrate the framework through case studies in insurance
+    underwriting and trading desks. The architecture requires no novel primitives—it
+    composes event sourcing, snapshot isolation, and domain-specific resolution functions
+    into an auditable, replayable system suitable for regulated industries.
+
+    CONFIRM'
+  pdf: engineering-the-agentic-enterprise-semantic-mvcc-transaction.pdf
+  hash: 53c997301fb32081
 - id: 2601.00003v1
   title: 'Seven Verbs: A Theory of Human Judgment in AI-Augmented Production Systems'
   authors:
