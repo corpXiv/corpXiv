@@ -96,34 +96,12 @@ jobs:
           INPUT_ABSTRACT: ${{ steps.check.outputs.abstract }}
           INPUT_CATEGORY: ${{ steps.parse.outputs.category }}
         run: |
-          python3 -c "
-          import sys, os, json
-          sys.path.insert(0, 'scripts')
-          from process_paper import process_paper
-
-          title = os.environ.get('INPUT_TITLE') or None
-          authors = os.environ.get('INPUT_AUTHORS')
-          authors = [a.strip() for a in authors.split(',')] if authors else None
-          abstract = os.environ.get('INPUT_ABSTRACT') or None
-          category = os.environ.get('INPUT_CATEGORY', 'other')
-
-          result = process_paper(
-              filepath='temp/paper.pdf',
-              category=category,
-              title=title,
-              authors=authors,
-              abstract=abstract
-          )
-          print(json.dumps(result))
-          " > temp/result.json
-          
+          python3 scripts/run_process.py > temp/result.json
           cat temp/result.json
-          
           echo "result<<ENDOFRESULT" >> $GITHUB_OUTPUT
           cat temp/result.json >> $GITHUB_OUTPUT
           echo "ENDOFRESULT" >> $GITHUB_OUTPUT
-          
-          STATUS=$(python3 -c "import json; print(json.load(open('temp/result.json')).get('status','error'))")
+          STATUS=$(cat temp/result.json | python3 -c "import sys,json; print(json.loads(sys.stdin.read()).get('status','error'))")
           echo "status=$STATUS" >> $GITHUB_OUTPUT
       
       - name: Move PDF to papers directory
@@ -156,9 +134,7 @@ jobs:
         with:
           script: |
             const result = JSON.parse(process.env.RESULT);
-            
             const authors = result.authors ? result.authors.join(', ') : 'Unknown';
-            
             const comment = `## 🎉 Paper Published!
             
             Your paper is now live on corpXiv.
@@ -212,10 +188,8 @@ jobs:
         with:
           script: |
             const result = JSON.parse(process.env.RESULT);
-            
             const errors = result.errors ? result.errors.map(e => `- ❌ ${e}`).join('\n') : 'Unknown error';
             const warnings = result.warnings ? result.warnings.map(w => `- ⚠️ ${w}`).join('\n') : '';
-            
             const comment = `## ⚠️ Validation Failed
             
             Your paper could not be processed:
