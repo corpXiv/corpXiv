@@ -96,19 +96,17 @@ jobs:
           INPUT_ABSTRACT: ${{ steps.check.outputs.abstract }}
           INPUT_CATEGORY: ${{ steps.parse.outputs.category }}
         run: |
-          cat > temp/run_process.py << 'EOF'
-          import sys
-          import os
-          import json
+          python3 -c "
+          import sys, os, json
           sys.path.insert(0, 'scripts')
           from process_paper import process_paper
-          
+
           title = os.environ.get('INPUT_TITLE') or None
           authors = os.environ.get('INPUT_AUTHORS')
           authors = [a.strip() for a in authors.split(',')] if authors else None
           abstract = os.environ.get('INPUT_ABSTRACT') or None
           category = os.environ.get('INPUT_CATEGORY', 'other')
-          
+
           result = process_paper(
               filepath='temp/paper.pdf',
               category=category,
@@ -117,15 +115,15 @@ jobs:
               abstract=abstract
           )
           print(json.dumps(result))
-          EOF
+          " > temp/result.json
           
-          RESULT=$(python3 temp/run_process.py)
+          cat temp/result.json
           
           echo "result<<ENDOFRESULT" >> $GITHUB_OUTPUT
-          echo "$RESULT" >> $GITHUB_OUTPUT
+          cat temp/result.json >> $GITHUB_OUTPUT
           echo "ENDOFRESULT" >> $GITHUB_OUTPUT
           
-          STATUS=$(echo "$RESULT" | python3 -c "import sys,json; print(json.loads(sys.stdin.read()).get('status','error'))")
+          STATUS=$(python3 -c "import json; print(json.load(open('temp/result.json')).get('status','error'))")
           echo "status=$STATUS" >> $GITHUB_OUTPUT
       
       - name: Move PDF to papers directory
