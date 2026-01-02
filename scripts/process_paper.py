@@ -572,7 +572,7 @@ def generate_sitemap() -> None:
     sitemap += '</urlset>\n'
     
     SITEMAP_PATH.write_text(sitemap)
-    print("Sitemap regenerated")
+    print("Sitemap regenerated", file=sys.stderr)
 
 
 def title_to_slug(title: str) -> str:
