@@ -1,3 +1,31 @@
+- id: 2601.00009v1
+  title: corpXiv preprint | github.com/corpXiv/corpXiv | January 2026 Page 1 A Defamation-Safe,
+    Evidence-Anchored Communication
+  authors: []
+  date: '2026-01-10'
+  category: ai-systems
+  slug: corpxiv-preprint-github-com-corpxiv-corpxiv-january-2026-pag
+  abstract: "*\r\n>\r\n> Artificial intelligence is increasingly used in workers’\
+    \ compensation\r\n> claims operations to surface inconsistencies, anomalies, and\
+    \ patterns that\r\n> may warrant Special Investigations Unit (SIU) review. However,\
+    \ many\r\n> AI-enabled fraud detection systems fail under regulatory examination,\r\
+    \n> discovery, or litigation—not due to model inaccuracy, but because their\r\n\
+    > outputs are not governable, reproducible, or legally defensible. In\r\n> particular,\
+    \ unstructured communication between automated systems can embed\r\n> im...\r\n\
+    >\r\n> *Category:* ai-systems\r\n> ------------------------------\r\n> ✅ To confirm\
+    \ and publish\r\n>\r\n> Reply with *CONFIRM* if this looks correct.\r\n> ✏️ To\
+    \ make corrections\r\n>\r\n> Reply with corrections in this format:\r\n>\r\n>\
+    \ TITLE: Your corrected title\r\n> AUTHORS: Last1, First1; Last2, First2\r\n>\
+    \ ABSTRACT: Your corrected abstract\r\n>\r\n> Only include fields you want to\
+    \ change.\r\n> ------------------------------\r\n>\r\n> *This is an automated\
+    \ extraction. Confidence: title=parsed,\r\n> authors=parsed, abstract=parsed*\r\
+    \n>\r\n> —\r\n> Reply to this email directly, view it on GitHub\r\n> <https://github.com/corpXiv/corpXiv/issues/10#issuecomment-3733551772>,\r\
+    \n> or unsubscribe\r\n> <https://github.com/notifications/unsubscribe-auth/B4TF7WKDUURXP2M72JVNGID4GFSPTAVCNFSM6AAAAACRJMDOU2VHI2DSMVQWIX3LMV43OSLTON2WKQ3PNVWWK3TUHMZTOMZTGU2TCNZXGI>\r\
+    \n> .\r\n> You are receiving this because you authored the thread.Message ID:\r\
+    \n> ***@***.***>\r\n>\r\n\r\n\r\n-- \r\n*Upendra Belhe, Ph.D.*\r\n*President*\r\
+    \n*Belhe Analytics Advisory*\r\n*www.belheanalytics.com <http://www.belheanalytics.com>*"
+  pdf: corpxiv-preprint-github-com-corpxiv-corpxiv-january-2026-pag.pdf
+  hash: ac37e607fb9f5d5c
 - id: 2601.00008v1
   title: 'A Layered Taxonomy of Agentic AI Failure Modes: Orthogonal Patterns and
     Three Corrective Primitives for Enterprise Governance'

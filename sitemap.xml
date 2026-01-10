@@ -2,9 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://corpxiv.github.io/corpXiv/</loc>
-    <lastmod>2026-01-08</lastmod>
+    <lastmod>2026-01-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://corpxiv.github.io/corpXiv/papers/ai-systems/corpxiv-preprint-github-com-corpxiv-corpxiv-january-2026-pag/</loc>
+    <lastmod>2026-01-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://corpxiv.github.io/corpXiv/papers/ai-systems/a-layered-taxonomy-of-agentic-ai-failure-modes-orthogonal-pa/</loc>
