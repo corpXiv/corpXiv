@@ -1,3 +1,30 @@
+- id: 2601.00011v1
+  title: A Defamation-Safe, Evidence-Anchored Communication Protocol Between AI Agents
+    in Workers’ Compensation SIU Workflows
+  authors:
+  - Belhe
+  - Upendra
+  date: '2026-01-10'
+  category: ai-systems
+  slug: a-defamation-safe-evidence-anchored-communication-protocol-b
+  abstract: 'Artificial intelligence is increasingly deployed in workers’ compensation
+    claims operations to surface inconsistencies, anomalies, and patterns warranting
+    Special Investigations Unit review. However, many AI-enabled fraud detection systems
+    fail under regulatory examination, discovery, or litigation—not due to model inaccuracy,
+    but because their outputs are not governable, reproducible, or legally defensible.
+    Unstructured communication between automated systems can embed implicit accusations,
+    omit evidence provenance, and obscure accountability for decisions affecting statutory
+    benefits. This paper introduces a formal, defamation-safe, evidence-anchored communication
+    protocol governing interactions between two AI agents: a Fraud Recommendation
+    Agent and an SIU Triage Agent. Designed for workers’ compensation claims, the
+    protocol defines message contracts, evidence bundle requirements, language constraints,
+    decision boundaries, and human-in-the-loop escalation points. Rather than automating
+    fraud adjudication, the protocol establishes a systems-level governance framework
+    preserving investigative integrity while enabling continuous learning. The contribution
+    is a citable, enterprise-grade design pattern reframing AI-enabled SIU workflows
+    as a coherence and accountability problem rather than a prediction accuracy problem.'
+  pdf: a-defamation-safe-evidence-anchored-communication-protocol-b.pdf
+  hash: 5e0a6ae7b8a529b2
 - id: 2601.00010v1
   title: 'Dragging Hyperpersonalization Into the Modern Era: Tensor Modes, GenAI Embeddings,
     and Joint Semantic Spaces'
