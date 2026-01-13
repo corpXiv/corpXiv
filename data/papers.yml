@@ -1,3 +1,32 @@
+- id: 2601.00012v1
+  title: 'GenIQ: The Second Harvest Enterprise Innovation from AI Governance Infrastructure'
+  authors:
+  - Iyer
+  - Rajesh
+  date: '2026-01-13'
+  category: enterprise-ai
+  slug: geniq-the-second-harvest-enterprise-innovation-from-ai-gover
+  abstract: 'Last Tuesday, an analyst at a regional insurer asked Claude why her water
+    damage claims keep getting worse between first notice and final payout. She wanted
+    to know if there’s a pattern—which claims escalate, which stay contained, whether
+    she can tell early. Claude synthesized across oncological staging, structural
+    fatigue curves, and ecological tipping points. What came back was a framework
+    for treating claims as staged processes—catching them at Stage I before they metastasize.
+    She didn’t know she’d invented a new insurance product. She was trying to understand
+    her Tuesday. The session expired. The IP is gone. This is happening in your enterprise,
+    ev- ery day. Three mechanisms drive it: quiet innovation—employees externalize
+    tacit knowledge without recognizing it as IP; wayward innovation—workarounds reveal
+    problems IT didn’t know existed; frame collision—queries that bridge disciplinary
+    boundaries synthe- size genuinely novel instruments. All three expire with the
+    session. Enterprises have deployed AI governance infrastructure to moni- tor GenAI
+    and enforce policy. That telemetry captures everything. The first harvest is compliance
+    value—risk mitigation, policy enforce- ment. The second harvest is enterprise
+    IP—innovation hidden in the same telemetry, vanishing while you read this. This
+    paper names the phenomenon, identifies three mechanisms driving it, proves they
+    pro- duce real inventions, specifies the system that captures them, and ad- dresses
+    the organizational conditions required for deployment.'
+  pdf: geniq-the-second-harvest-enterprise-innovation-from-ai-gover.pdf
+  hash: 0ad4e9224d9ad16d
 - id: 2601.00011v1
   title: A Defamation-Safe, Evidence-Anchored Communication Protocol Between AI Agents
     in Workers’ Compensation SIU Workflows
