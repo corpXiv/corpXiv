@@ -2,9 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://corpxiv.github.io/corpXiv/</loc>
-    <lastmod>2026-01-13</lastmod>
+    <lastmod>2026-01-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://corpxiv.github.io/corpXiv/papers/enterprise-ai/the-last-mile-to-agentic-value-closer-than-we-think/</loc>
+    <lastmod>2026-01-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://corpxiv.github.io/corpXiv/papers/enterprise-ai/geniq-the-second-harvest-enterprise-innovation-from-ai-gover/</loc>

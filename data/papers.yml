@@ -1,3 +1,26 @@
+- id: 2601.00013v1
+  title: The Last Mile to Agentic Value - Closer Than We Think
+  authors:
+  - Iyer
+  - Rajesh
+  date: '2026-01-23'
+  category: enterprise-ai
+  slug: the-last-mile-to-agentic-value-closer-than-we-think
+  abstract: Enterprise agentic AI adoption is stalling not because the technology
+    fails, but because practitioners cannot produce evidence that satisfies examiners.
+    Debug traces tell engineering what executed. Compli- ance replay tells regulators
+    why a decision was made, what alterna- tives were rejected, and under what authority
+    the system acted. This paper defines compliance replay as the missing evidentiary
+    primi- tive for agentic systems—a standardized, auditable representation for third
+    parties, analogous to what financial statements are for firms. We specify the
+    minimal five-element construct (Who, What, State, Branch Logic, Counterfactual),
+    illustrate the transformation with con- crete banking and insurance examples,
+    and call for practitioner align- ment on this standard. Compliance replay cannot
+    be retrofitted. Ev- ery agentic system designed today without the required infrastruc-
+    ture is accumulating technical debt that will block deployment later. The gap
+    is bridgeable, but only through deliberate design.
+  pdf: the-last-mile-to-agentic-value-closer-than-we-think.pdf
+  hash: 0220d4eeb7c339f9
 - id: 2601.00012v1
   title: 'GenIQ: The Second Harvest Enterprise Innovation from AI Governance Infrastructure'
   authors:
