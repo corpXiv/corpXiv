@@ -1,3 +1,27 @@
+- id: 2602.00016v1
+  title: A Market-Conduct-Safe, Evidence-Anchored Decision Packet for AI-Assisted
+    P&C Underwriting Design principles for auditability, adverse-action defensibility,
+    and controlled discretion
+  authors:
+  - Belhe Ph.D.
+  - Upendra
+  date: '2026-02-10'
+  category: enterprise-ai
+  slug: a-market-conduct-safe-evidence-anchored-decision-packet-for-
+  abstract: 'AI-assisted underwriting in regulated P&C insurance is constrained not
+    by model capability, but by the inability to produce durable decision evidence
+    that withstands market conduct review. Regulators audit files, not models. This
+    paper proposes a Decision Packet: a standardized, auditable, replayable record
+    binding underwriting outcomes to contemporaneous evidence, governing constraints,
+    decision authority, and alternatives considered. We define a protocol comprising
+    a
+
+    message envelope, evidence bundle contract, decision graph, and compliance replay
+    manifest. Two worked examples (Personal Lines Auto and Commercial Workers’ Compensation)
+    demonstrate implementation. The proposed construct is buildable today and enables
+    scalable, defensible AI-assisted underwriting in regulated environments.'
+  pdf: a-market-conduct-safe-evidence-anchored-decision-packet-for-.pdf
+  hash: 43ea95209f45f774
 - id: 2601.00015v1
   title: The $10 Trillion Blueprint - How the Musk Portfolio Will Eclipse the Dutch
     East India Company to Become the Largest Enterprise in History
