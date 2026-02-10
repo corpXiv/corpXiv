@@ -28,48 +28,6 @@
     rationale is noted but not endorsed.'
   pdf: the-10-trillion-blueprint-how-the-musk-portfolio-will-eclips.pdf
   hash: 6ef1a9e504ff6327
-- id: 2601.00014v1
-  title: corpXiv preprint | github.com/corpXiv/corpXiv | 2026-01-24 A Market-Conduct-Safe,
-    Evidence-Anchored Decision Packet for AI-Assisted P&C Underwriting Design principles
-    for auditability, adverse-action ...
-  authors: []
-  date: '2026-01-24'
-  category: ai-systems
-  slug: corpxiv-preprint-github-com-corpxiv-corpxiv-2026-01-24-a-mar
-  abstract: "Agentic AI in regulated P&C insurance is constrained less by\r\nmodel\
-    \ capability than by the inability to produce durable decision\r\nevidence. Underwriting\
-    \ decisions persist for years, and regulators,\r\ncourts, and customers routinely\
-    \ require carriers to demonstrate what\r\nwas known at decision time, which rules\
-    \ applied, where discretion was\r\nexercised, and who held authority for exceptions.\
-    \ Current AI\r\ndeployments optimize prediction and workflow speed but fail to\r\
-    \npreserve this decision state; debug traces and explainability\r\nartifacts satisfy\
-    \ engineers, not auditors. This paper defines a\r\nminimal decision-evidence construct\
-    \ and a decision-spine architecture\r\nthat binds models, rules, human intervention,\
-    \ and escalation pathways\r\ninto replayable, auditable records, illustrated through\
-    \ worked\r\nunderwriting examples. Underwriting AI will scale in regulated\r\n\
-    insurance only when systems are designed to produce owned, defensible\r\ndecisions\
-    \ that survive time.\r\n\r\n\r\nOn Sat, Jan 24, 2026 at 12:41 PM github-actions[bot]\
-    \ <\r\n***@***.***> wrote:\r\n\r\n> *github-actions[bot]* left a comment (corpXiv/corpXiv#15)\r\
-    \n> <https://github.com/corpXiv/corpXiv/issues/15#issuecomment-3794032910>\r\n\
-    > \U0001F4CB Extracted Metadata\r\n>\r\n> I've extracted the following from your\
-    \ PDF. Please review:\r\n>\r\n> *Title:* corpXiv preprint | github.com/corpXiv/corpXiv\
-    \ | 2026-01-24 A\r\n> Market-Conduct-Safe, Evidence-Anchored Decision Packet for\
-    \ AI-Assisted P&C\r\n> Underwriting Design principles for auditability, adverse-action\
-    \ ...\r\n>\r\n> *Authors:* *Could not extract authors*\r\n>\r\n> *Abstract:*\r\
-    \n>\r\n> *Could not extract abstract*\r\n>\r\n> *Category:* ai-systems\r\n> ------------------------------\r\
-    \n> ✅ To confirm and publish\r\n>\r\n> Reply with *CONFIRM* if this looks correct.\r\
-    \n> ✏️ To make corrections\r\n>\r\n> Reply with corrections in this format:\r\n\
-    >\r\n> TITLE: Your corrected title\r\n> AUTHORS: Last1, First1; Last2, First2\r\
-    \n> ABSTRACT: Your corrected abstract\r\n>\r\n> Only include fields you want to\
-    \ change.\r\n> ------------------------------\r\n>\r\n> *This is an automated\
-    \ extraction. Confidence: title=parsed,\r\n> authors=parsed, abstract=not_found*\r\
-    \n>\r\n> —\r\n> Reply to this email directly, view it on GitHub\r\n> <https://github.com/corpXiv/corpXiv/issues/15#issuecomment-3794032910>,\r\
-    \n> or unsubscribe\r\n> <https://github.com/notifications/unsubscribe-auth/B4TF7WP2M2R3ENHFYVUCZLD4IMLLVAVCNFSM6AAAAACSXZZPMKVHI2DSMVQWIX3LMV43OSLTON2WKQ3PNVWWK3TUHMZTOOJUGAZTEOJRGA>\r\
-    \n> .\r\n> You are receiving this because you authored the thread.Message ID:\r\
-    \n> ***@***.***>\r\n>\r\n\r\n\r\n-- \r\n*Upendra Belhe, Ph.D.*\r\n*President*\r\
-    \n*Belhe Analytics Advisory*\r\n*www.belheanalytics.com <http://www.belheanalytics.com>*"
-  pdf: corpxiv-preprint-github-com-corpxiv-corpxiv-2026-01-24-a-mar.pdf
-  hash: 09ef65a3b069faf1
 - id: 2601.00013v1
   title: The Last Mile to Agentic Value - Closer Than We Think
   authors:
