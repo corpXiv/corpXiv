@@ -1,3 +1,40 @@
+- id: 2602.00017v1
+  title: 'The Task Horizon Illusion: Why METR’s Exponential Doesn’t Reach the Enterprise
+    Data Problem'
+  authors:
+  - Iyer
+  - Rajesh
+  date: '2026-02-12'
+  category: enterprise-ai
+  slug: the-task-horizon-illusion-why-metr-s-exponential-doesn-t-rea
+  abstract: 'METR’s time-horizon metric shows AI agents doubling their autonomous
+    task-completion capability every seven months, with recent acceleration to an
+    89-day doubling period. Claude Opus 4.5 reached a 50% time horizon of approximately
+    5 hours in late 2025. These findings have catalyzed extraordinary claims: Sequoia
+    Capital has declared “2026: This Is AGI”; Bloomberg Intelligence projects 200,000
+    Wall Street job cuts; Citi estimates 54% of banking jobs are “highly automatable.”
+
+    We reproduce the METR trendline from 16,598 raw evaluation runs across 228 tasks
+    and 14 frontier models, confirming the exponential. We then demonstrate that this
+    trend, while methodologically careful, systematically misrepresents the automation
+    frontier in Banking, Financial Services, and Insurance (BFSI). The defining challenge
+    is not task length but data breadth: the reconciliation of structured transactional
+    systems with unstructured corpora under real-time consistency and regulatory audit
+    requirements. We introduce the Data Unification Horizon (DUH) as a complementary
+    metric, identify three load-bearing
+
+    capabilities absent from all current AI benchmarks, and map BFSI task families
+    against both dimensions. Our analysis reveals a sharp partition: low-DUH tasks
+    (boilerplate generation, single-source reconciliation, rule-based screening) are
+    genuinely headed for obsolescence within 18–24 months, while high-DUH tasks (complex
+    underwriting, multi-party claims, KYC remediation, model validation) will resist
+    time-horizon expansion indefinitely absent enterprise data infrastructure investment.
+    The 200,000 jobs at risk are not writing code. They are reconciling data across
+    systems that don’t talk to each other, under regulatory frameworks that demand
+    auditability. The METR trendline doesn’t reach them. What reaches them is data
+    unification.'
+  pdf: the-task-horizon-illusion-why-metr-s-exponential-doesn-t-rea.pdf
+  hash: 4405b80dad3f9063
 - id: 2602.00016v1
   title: A Market-Conduct-Safe, Evidence-Anchored Decision Packet for AI-Assisted
     P&C Underwriting Design principles for auditability, adverse-action defensibility,
