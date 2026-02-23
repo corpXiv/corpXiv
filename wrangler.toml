@@ -4,7 +4,7 @@ compatibility_date = "2024-12-01"
 
 [[kv_namespaces]]
 binding = "LINKS"
-id = "<PASTE_YOUR_KV_NAMESPACE_ID>"
+id = "8168d4bfd31f4a18a2b788d857ff1af1"
 
 # Uncomment and set your domain once DNS is configured:
 # [triggers]
