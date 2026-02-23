@@ -7,6 +7,7 @@
   date: '2026-02-12'
   category: enterprise-ai
   slug: the-task-horizon-illusion-why-metr-s-exponential-doesn-t-rea
+  shortlink: task-horizon
   abstract: 'METR’s time-horizon metric shows AI agents doubling their autonomous
     task-completion capability every seven months, with recent acceleration to an
     89-day doubling period. Claude Opus 4.5 reached a 50% time horizon of approximately
@@ -45,6 +46,7 @@
   date: '2026-02-10'
   category: enterprise-ai
   slug: a-market-conduct-safe-evidence-anchored-decision-packet-for-
+  shortlink: underwriting-ai
   abstract: 'AI-assisted underwriting in regulated P&C insurance is constrained not
     by model capability, but by the inability to produce durable decision evidence
     that withstands market conduct review. Regulators audit files, not models. This
@@ -68,6 +70,7 @@
   date: '2026-01-27'
   category: ai-systems
   slug: the-10-trillion-blueprint-how-the-musk-portfolio-will-eclips
+  shortlink: musk-blueprint
   abstract: 'This paper argues that the portfolio of companies controlled by Elon
     Musk (Tesla, SpaceX, xAI, X, Neuralink, and Starlink) constitutes the blueprint
     for the largest integrated enterprise in human history, with con- solidated value
@@ -97,6 +100,7 @@
   date: '2026-01-23'
   category: enterprise-ai
   slug: the-last-mile-to-agentic-value-closer-than-we-think
+  shortlink: agentic-last-mile
   abstract: Enterprise agentic AI adoption is stalling not because the technology
     fails, but because practitioners cannot produce evidence that satisfies examiners.
     Debug traces tell engineering what executed. Compli- ance replay tells regulators
@@ -120,6 +124,7 @@
   date: '2026-01-13'
   category: enterprise-ai
   slug: geniq-the-second-harvest-enterprise-innovation-from-ai-gover
+  shortlink: geniq
   abstract: 'Last Tuesday, an analyst at a regional insurer asked Claude why her water
     damage claims keep getting worse between first notice and final payout. She wanted
     to know if there’s a pattern—which claims escalate, which stay contained, whether
@@ -150,6 +155,7 @@
   date: '2026-01-10'
   category: ai-systems
   slug: a-defamation-safe-evidence-anchored-communication-protocol-b
+  shortlink: agent-comms
   abstract: 'Artificial intelligence is increasingly deployed in workers’ compensation
     claims operations to surface inconsistencies, anomalies, and patterns warranting
     Special Investigations Unit review. However, many AI-enabled fraud detection systems
@@ -177,6 +183,7 @@
   date: '2026-01-10'
   category: ai-systems
   slug: dragging-hyperpersonalization-into-the-modern-era-tensor-mod
+  shortlink: hyperpersonalization
   abstract: 'Hyperpersonalization—serving relevant recommenda- tions in rare conditional
     slices—remains resistant to mod- ern deep learning. Transformers dominate head-heavy
     metrics but fail when user-item-context-time combinations are sparse. We argue
@@ -209,6 +216,7 @@
   date: '2026-01-08'
   category: ai-systems
   slug: a-layered-taxonomy-of-agentic-ai-failure-modes-orthogonal-pa
+  shortlink: agentic-failures
   abstract: 'As agentic AI systems transition from research prototypes to enterprise
     deployment, the absence of comprehensive failure mode frameworks impedes systematic
     risk assessment. This paper presents a practitioner taxonomy of failure patterns
@@ -236,6 +244,7 @@
   date: '2026-01-07'
   category: architecture
   slug: the-grounding-gap-why-agentic-ai-fails-and-how-multimodal-re
+  shortlink: grounding-gap
   abstract: 'Language implicates physical reality without under- standing it—and unlike
     symbolic codes, language is combinatorially unbounded. This is the semantic ex-
     plosion: enterprise AI has moved from symbols (pol- icy codes, customer IDs) that
@@ -269,6 +278,7 @@
   date: '2026-01-07'
   category: enterprise-ai
   slug: beyond-protectionism-why-free-trade-powers-ai
+  shortlink: free-trade-ai
   abstract: 'This paper argues that Keynes’ pre-1929 endorsement of free trade is
     emphatically urgent in
 
@@ -301,6 +311,7 @@
   date: '2026-01-02'
   category: architecture
   slug: the-sum-of-all-fears-enterprise-agentic-ai-emerges-a-fear-ta
+  shortlink: agentic-fears
   abstract: 'Enterprise adoption of agentic AI remains paralyzed by fears—loss of
     control, hallucination, accountability gaps, silent drift. This paralysis is the
     greater risk. A companion paper established Ashby’s Constraint: you cannot govern
@@ -323,6 +334,7 @@
   date: '2026-01-02'
   category: architecture
   slug: engineering-the-agentic-enterprise-semantic-mvcc-transaction
+  shortlink: semantic-mvcc
   abstract: 'Agentic systems require coordination mechanisms that traditional database
     concurrency control cannot provide. While Data MVCC resolves conflicts through
     data representation—normalizing facts to canonical addresses where conflicts are
@@ -349,6 +361,7 @@
   date: '2026-01-02'
   category: enterprise-ai
   slug: seven-verbs-a-theory-of-human-judgment-in-ai-augmented-produ
+  shortlink: seven-verbs
   abstract: 'This paper proposes a seven-verb taxonomy for characterizing human work
     in AI-augmented en- vironments. Through dual independent deriva- tion—from organizational
     outputs backward and from irreducible human capacities forward—we identify seven
@@ -374,6 +387,7 @@
   date: '2026-01-01'
   category: ai-systems
   slug: semantic_identity_drift
+  shortlink: semantic-drift
   abstract: 'Modern decision systems may satisfy formal correctness criteria while
     nonetheless  undergoing a gradual transformation of their internal semantic identity.
     This paper  isolates and formalizes this phenomenon as semantic identity drift.
@@ -388,6 +402,7 @@
   date: '2025-12-31'
   category: ai-systems
   slug: ben_button
+  shortlink: ben-button
   abstract: 'The industry tried to be born old—deploying agents before earning the
     governance  to sustain them. For eighteen months, the narrative held that LLMs
     reason like  humans, therefore agents everywhere. That story skipped the hard
@@ -415,6 +430,7 @@
   date: '2026-01-01'
   category: data-engineering
   slug: dq-tensor-methods-for-data-quality-validation-in-business-in
+  shortlink: tau-dq
   abstract: 'We introduce τDQ (tau-DQ), a GPU-accelerated framework for detecting
     missing and potentially inaccurate data in business intelligence through tensor
     methods. Unlike conventional profiling that validates individual fields, τDQ identifies
