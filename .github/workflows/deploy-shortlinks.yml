@@ -1,0 +1,85 @@
+name: Deploy Shortlinks
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "data/papers.yml"
+      - "shortlinks/**"
+      - "wrangler.toml"
+
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install deps
+        run: pip install pyyaml
+
+      - name: Build KV bulk JSON from papers.yml + manual links
+        run: |
+          python3 - <<'SCRIPT'
+          import json, yaml
+          from pathlib import Path
+
+          bulk = []
+
+          # Paper shortlinks from papers.yml
+          papers_path = Path("data/papers.yml")
+          if papers_path.exists():
+              papers = yaml.safe_load(papers_path.read_text()) or []
+              for p in papers:
+                  sl = p.get("shortlink")
+                  if not sl:
+                      continue
+                  cat = p.get("category", "other")
+                  slug = p.get("slug", "")
+                  url = f"https://corpxiv.github.io/corpXiv/papers/{cat}/{slug}/"
+                  bulk.append({"key": sl, "value": url})
+                  print(f"  paper: {sl} -> {url}")
+
+          # Manual links
+          manual_path = Path("shortlinks/manual-links.json")
+          if manual_path.exists():
+              manual = json.loads(manual_path.read_text())
+              for slug, url in manual.items():
+                  bulk.append({"key": slug, "value": url})
+                  print(f"  manual: {slug} -> {url}")
+
+          out = Path("shortlinks/links-bulk.json")
+          out.write_text(json.dumps(bulk, indent=2))
+          print(f"\n✅ {len(bulk)} total shortlinks")
+          SCRIPT
+
+      - name: Install Wrangler
+        run: npm install -g wrangler
+
+      - name: Bulk write links to KV
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+        run: |
+          COUNT=$(python3 -c "import json; print(len(json.loads(open('shortlinks/links-bulk.json').read())))")
+          if [ "$COUNT" -gt "0" ]; then
+            wrangler kv bulk put \
+              --namespace-id "${{ vars.KV_NAMESPACE_ID }}" \
+              shortlinks/links-bulk.json
+            echo "✅ Wrote $COUNT keys to KV"
+          else
+            echo "⚠️ No shortlinks to write"
+          fi
+
+      - name: Deploy Worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+        run: wrangler deploy

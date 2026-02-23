@@ -30,8 +30,11 @@ jobs:
             const authorsMatch = comment.match(/AUTHORS:\s*(.+?)(?:\n|$)/i);
             if (authorsMatch) corrections.authors = authorsMatch[1].trim();
             
-            const abstractMatch = comment.match(/ABSTRACT:\s*([\s\S]+?)(?:\n(?:TITLE|AUTHORS|CONFIRM):|$)/i);
+            const abstractMatch = comment.match(/ABSTRACT:\s*([\s\S]+?)(?:\n(?:TITLE|AUTHORS|SHORTLINK|CONFIRM):|$)/i);
             if (abstractMatch) corrections.abstract = abstractMatch[1].trim();
+            
+            const shortlinkMatch = comment.match(/SHORTLINK:\s*(.+?)(?:\n|$)/i);
+            if (shortlinkMatch) corrections.shortlink = shortlinkMatch[1].trim().toLowerCase().replace(/[^a-z0-9\-]/g, '');
             
             const hasCorrections = Object.keys(corrections).length > 0;
             
@@ -45,6 +48,7 @@ jobs:
             core.setOutput('title', corrections.title || '');
             core.setOutput('authors', corrections.authors || '');
             core.setOutput('abstract', corrections.abstract || '');
+            core.setOutput('shortlink_override', corrections.shortlink || '');
             console.log('Processing with corrections:', corrections);
       
       - name: Checkout repository
@@ -63,7 +67,7 @@ jobs:
         if: steps.check.outputs.should_process == 'true'
         run: pip install pypdf reportlab pyyaml
       
-      - name: Parse issue for PDF and category
+      - name: Parse issue for PDF, category, and shortlink
         if: steps.check.outputs.should_process == 'true'
         id: parse
         uses: actions/github-script@v7
@@ -78,8 +82,19 @@ jobs:
                             body.match(/https:\/\/github\.com\/user-attachments\/[^\s\)]+/);
             const pdfUrl = pdfMatch ? pdfMatch[0] : null;
             
+            // Extract shortlink from original submission
+            const shortlinkMatch = body.match(/### Short link name \(optional\)\s*\n\s*(.+)/);
+            let shortlink = '';
+            if (shortlinkMatch) {
+              shortlink = shortlinkMatch[1].trim().toLowerCase().replace(/[^a-z0-9\-]/g, '');
+            }
+            if (shortlink === 'no response' || shortlink === 'noresponse') {
+              shortlink = '';
+            }
+            
             core.setOutput('category', category);
             core.setOutput('pdf_url', pdfUrl);
+            core.setOutput('shortlink', shortlink);
       
       - name: Download PDF
         if: steps.check.outputs.should_process == 'true'
@@ -95,6 +110,7 @@ jobs:
           INPUT_AUTHORS: ${{ steps.check.outputs.authors }}
           INPUT_ABSTRACT: ${{ steps.check.outputs.abstract }}
           INPUT_CATEGORY: ${{ steps.parse.outputs.category }}
+          INPUT_SHORTLINK: ${{ steps.check.outputs.shortlink_override || steps.parse.outputs.shortlink }}
         run: |
           python3 scripts/run_process.py > temp/result.json
           cat temp/result.json
@@ -135,6 +151,9 @@ jobs:
           script: |
             const result = JSON.parse(process.env.RESULT);
             const authors = result.authors ? result.authors.join(', ') : 'Unknown';
+            const shortlinkLine = result.shortlink 
+              ? `\n**Short link:** https://go.corpxiv.org/${result.shortlink}`
+              : '';
             const comment = `## 🎉 Paper Published!
             
             Your paper is now live on corpXiv.
@@ -144,6 +163,7 @@ jobs:
             **Landing Page:** https://corpxiv.github.io/corpXiv/papers/${result.category}/${result.slug}/
             
             **PDF:** https://corpxiv.github.io/corpXiv/papers/${result.category}/${result.slug}/${result.slug}.pdf
+            ${shortlinkLine}
             
             **Citation:**
             \`\`\`

@@ -12,12 +12,14 @@ authors = os.environ.get('INPUT_AUTHORS')
 authors = [a.strip() for a in authors.split(',')] if authors else None
 abstract = os.environ.get('INPUT_ABSTRACT') or None
 category = os.environ.get('INPUT_CATEGORY', 'other')
+shortlink = os.environ.get('INPUT_SHORTLINK') or None
 
 result = process_paper(
     filepath='temp/paper.pdf',
     category=category,
     title=title,
     authors=authors,
-    abstract=abstract
+    abstract=abstract,
+    shortlink=shortlink
 )
 print(json.dumps(result))

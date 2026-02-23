@@ -3,6 +3,7 @@
 corpXiv paper processing pipeline.
 - Extracts metadata from PDF (title, authors, abstract)
 - Validates against guardrails
+- Validates and assigns shortlinks
 - Stamps PDF with corpXiv ID
 - Generates Scholar-indexed landing page
 - Updates papers.yml
@@ -28,12 +29,16 @@ from reportlab.lib.colors import HexColor
 MANIFEST_PATH = Path('manifest.json')
 PAPERS_YAML_PATH = Path('data/papers.yml')
 SITEMAP_PATH = Path('sitemap.xml')
-TEMPLATES_PATH = Path('_templates')
+RESERVED_SLUGS_PATH = Path('shortlinks/reserved-slugs.txt')
+MANUAL_LINKS_PATH = Path('shortlinks/manual-links.json')
 
 # Guardrails config
 MIN_ABSTRACT_WORDS = 50
 MIN_TITLE_LENGTH = 10
 MAX_PAPERS_PER_AUTHOR_PER_WEEK = 2
+
+# Shortlink config
+SHORTLINK_PATTERN = re.compile(r'^[a-z0-9][a-z0-9\-]{2,40}$')
 
 
 class ExtractionResult:
@@ -91,6 +96,81 @@ def get_pdf_hash(filepath: str) -> str:
         return hashlib.sha256(f.read()).hexdigest()[:16]
 
 
+# ---------------------------------------------------------------------------
+# Shortlink helpers
+# ---------------------------------------------------------------------------
+
+def load_reserved_slugs() -> set:
+    """Load reserved shortlink names."""
+    if RESERVED_SLUGS_PATH.exists():
+        return {
+            line.strip().lower()
+            for line in RESERVED_SLUGS_PATH.read_text().splitlines()
+            if line.strip() and not line.strip().startswith('#')
+        }
+    return set()
+
+
+def load_manual_links() -> dict:
+    """Load manually defined shortlinks (non-paper links)."""
+    if MANUAL_LINKS_PATH.exists():
+        return json.loads(MANUAL_LINKS_PATH.read_text())
+    return {}
+
+
+def get_existing_shortlinks() -> dict:
+    """Return {shortlink: corpxiv_id} for all published papers."""
+    papers = load_papers_yaml()
+    return {
+        p['shortlink']: p['id']
+        for p in papers
+        if p.get('shortlink')
+    }
+
+
+def validate_shortlink(shortlink: str, exclude_id: str = None) -> dict:
+    """
+    Validate a shortlink slug.
+    Returns {'valid': bool, 'error': str|None, 'auto_slug': str|None}
+    """
+    if not shortlink:
+        return {'valid': True, 'error': None, 'auto_slug': None}
+
+    shortlink = shortlink.lower().strip()
+
+    # Format check
+    if not SHORTLINK_PATTERN.match(shortlink):
+        return {
+            'valid': False,
+            'error': 'Must be 3-40 chars, lowercase alphanumeric + hyphens, starting with letter or digit'
+        }
+
+    # Reserved check
+    reserved = load_reserved_slugs()
+    if shortlink in reserved:
+        return {'valid': False, 'error': f'"{shortlink}" is reserved'}
+
+    # Manual links collision
+    manual = load_manual_links()
+    if shortlink in manual:
+        return {'valid': False, 'error': f'"{shortlink}" is already used as a manual link'}
+
+    # Paper collision
+    existing = get_existing_shortlinks()
+    if shortlink in existing:
+        owner_id = existing[shortlink]
+        if exclude_id and owner_id == exclude_id:
+            pass  # Same paper, OK
+        else:
+            return {'valid': False, 'error': f'"{shortlink}" is already taken by corpXiv:{owner_id}'}
+
+    return {'valid': True, 'error': None}
+
+
+# ---------------------------------------------------------------------------
+# Metadata extraction
+# ---------------------------------------------------------------------------
+
 def extract_metadata(filepath: str) -> ExtractionResult:
     """Extract title, authors, and abstract from arXiv-style PDF."""
     result = ExtractionResult()
@@ -110,7 +190,6 @@ def extract_metadata(filepath: str) -> ExtractionResult:
                 result.title = meta.title.strip()
                 result.confidence['title'] = 'metadata'
             if meta.author:
-                # Authors might be comma or semicolon separated
                 authors = re.split(r'[;,]', meta.author)
                 result.authors = [a.strip() for a in authors if a.strip()]
                 result.confidence['authors'] = 'metadata'
@@ -130,7 +209,7 @@ def extract_metadata(filepath: str) -> ExtractionResult:
         result.confidence['abstract'] = 'parsed' if result.abstract else 'not_found'
         
     except Exception as e:
-        print(f"Error extracting metadata: {e}")
+        print(f"Error extracting metadata: {e}", file=sys.stderr)
     
     return result
 
@@ -142,30 +221,23 @@ def extract_title_from_text(text: str) -> str:
     if not lines:
         return ""
     
-    # Title is usually the first substantial line(s) before authors
-    # Look for lines that are likely title (before we hit author patterns or Abstract)
     title_lines = []
-    for line in lines[:10]:  # Check first 10 lines
-        # Stop if we hit abstract or author indicators
+    for line in lines[:10]:
         if re.match(r'^abstract', line, re.I):
             break
-        if '@' in line or re.match(r'.*\d{4}.*@', line):  # Email = authors
+        if '@' in line or re.match(r'.*\d{4}.*@', line):
             break
         if re.match(r'^(university|department|school|institute)', line, re.I):
             break
-        # Skip very short lines or lines that look like headers
         if len(line) < 5:
             continue
         title_lines.append(line)
-        # Title is usually 1-3 lines max
         if len(title_lines) >= 3:
             break
     
     title = ' '.join(title_lines)
-    # Clean up
     title = re.sub(r'\s+', ' ', title).strip()
     
-    # Truncate if too long
     if len(title) > 200:
         title = title[:200] + "..."
     
@@ -177,40 +249,25 @@ def extract_authors_from_text(text: str) -> list[str]:
     lines = [l.strip() for l in text.split('\n') if l.strip()]
     authors = []
     
-    # Look for lines between title and abstract that contain names
-    in_author_section = False
     for i, line in enumerate(lines[:20]):
-        # Skip until we're past likely title
         if i < 1:
             continue
-        
-        # Stop at Abstract
         if re.match(r'^abstract', line, re.I):
             break
-        
-        # Look for author patterns:
-        # - Lines with multiple capitalized names
-        # - Lines with commas separating names
-        # - Lines before institutional affiliations
-        
-        # Check if line looks like names
         if re.match(r'^[A-Z][a-z]+(\s+[A-Z]\.?\s*)*[A-Z][a-z]+', line):
-            # Split by comma or 'and'
             parts = re.split(r',\s*|\s+and\s+', line)
             for part in parts:
                 part = part.strip()
-                # Clean up affiliations markers (superscripts, numbers)
                 part = re.sub(r'[\d\*†‡§¶]+', '', part).strip()
-                if part and len(part) > 3 and not '@' in part:
+                if part and len(part) > 3 and '@' not in part:
                     if re.match(r'^[A-Z][a-z]+', part):
                         authors.append(part)
     
-    return authors[:10]  # Max 10 authors
+    return authors[:10]
 
 
 def extract_abstract_from_text(text: str) -> str:
     """Extract abstract section from PDF text."""
-    # Look for Abstract header
     abstract_match = re.search(
         r'(?:^|\n)\s*(?:ABSTRACT|Abstract)\s*[:\.\n]\s*(.*?)(?=\n\s*(?:1\.?\s*Introduction|INTRODUCTION|Keywords|KEYWORDS|I\.\s|1\s+[A-Z])|\Z)',
         text,
@@ -219,20 +276,23 @@ def extract_abstract_from_text(text: str) -> str:
     
     if abstract_match:
         abstract = abstract_match.group(1).strip()
-        # Clean up
         abstract = re.sub(r'\s+', ' ', abstract)
-        # Remove any trailing keywords section that might have slipped in
         abstract = re.split(r'\bkeywords?\b', abstract, flags=re.I)[0].strip()
         return abstract
     
     return ""
 
 
+# ---------------------------------------------------------------------------
+# Validation
+# ---------------------------------------------------------------------------
+
 def validate_submission(
     extraction: ExtractionResult,
     filepath: str,
     papers: list,
-    manifest: dict
+    manifest: dict,
+    shortlink: str = ""
 ) -> ValidationResult:
     """Run guardrails validation."""
     errors = []
@@ -244,7 +304,7 @@ def validate_submission(
     
     # Check authors
     if not extraction.authors:
-        warnings.append("Could not extract authors — please provide manually")
+        warnings.append("Could not extract authors -- please provide manually")
     
     # Check abstract
     abstract_words = len(extraction.abstract.split()) if extraction.abstract else 0
@@ -255,7 +315,7 @@ def validate_submission(
     pdf_hash = get_pdf_hash(filepath)
     for paper in papers:
         if paper.get('hash') == pdf_hash:
-            errors.append("Duplicate paper — this PDF has already been submitted")
+            errors.append("Duplicate paper -- this PDF has already been submitted")
             break
     
     # Check PDF is valid
@@ -266,12 +326,22 @@ def validate_submission(
     except Exception as e:
         errors.append(f"Invalid PDF file: {e}")
     
+    # Validate shortlink if provided
+    if shortlink:
+        sl_result = validate_shortlink(shortlink)
+        if not sl_result['valid']:
+            errors.append(f"Shortlink error: {sl_result['error']}")
+    
     return ValidationResult(
         valid=len(errors) == 0,
         errors=errors,
         warnings=warnings
     )
 
+
+# ---------------------------------------------------------------------------
+# Publishing pipeline
+# ---------------------------------------------------------------------------
 
 def generate_corpxiv_id(manifest: dict, category: str) -> tuple[str, str]:
     """Generate new corpXiv ID and return (id, date)."""
@@ -342,24 +412,26 @@ def generate_landing_page(
     category: str,
     pdf_filename: str,
     slug: str,
+    shortlink: str,
     output_dir: Path
 ) -> None:
     """Generate Scholar-indexed HTML landing page."""
     
     output_dir.mkdir(parents=True, exist_ok=True)
     
-    # Format date for display
     date_obj = datetime.strptime(date_str, '%Y-%m-%d')
     display_date = date_obj.strftime('%B %d, %Y')
     scholar_date = date_obj.strftime('%Y/%m/%d')
     
-    # Format authors
     authors_meta = '\n  '.join([f'<meta name="citation_author" content="{a}">' for a in authors])
     authors_display = ', '.join(authors) if authors else 'Unknown'
     
-    # Escape for HTML
     title_escaped = title.replace('"', '&quot;').replace('<', '&lt;').replace('>', '&gt;')
     abstract_escaped = abstract.replace('"', '&quot;').replace('<', '&lt;').replace('>', '&gt;')
+    
+    shortlink_html = ''
+    if shortlink:
+        shortlink_html = f'\n      <p class="shortlink">Short link: <a href="https://go.corpxiv.org/{shortlink}">go.corpxiv.org/{shortlink}</a></p>'
     
     html = f'''<!DOCTYPE html>
 <html lang="en">
@@ -465,6 +537,13 @@ def generate_landing_page(
       color: #666;
       margin-top: 1.5rem;
     }}
+    .shortlink {{
+      font-family: monospace;
+      font-size: 0.85rem;
+      color: #666;
+      margin-top: 0.5rem;
+    }}
+    .shortlink a {{ color: var(--accent); }}
     footer {{
       margin-top: 3rem;
       padding-top: 1rem;
@@ -480,14 +559,14 @@ def generate_landing_page(
   </header>
   
   <main>
-    <a href="https://corpxiv.github.io/corpXiv/" class="back-link">← All papers</a>
+    <a href="https://corpxiv.github.io/corpXiv/" class="back-link">&larr; All papers</a>
     
     <article>
       <h1>{title_escaped}</h1>
       
       <div class="meta">
         <span class="authors">{authors_display}</span>
-        <span> · {display_date}</span>
+        <span> &middot; {display_date}</span>
       </div>
       
       <div class="abstract">
@@ -497,7 +576,7 @@ def generate_landing_page(
       
       <a href="{pdf_filename}" class="download-btn">Download PDF</a>
       
-      <p class="identifier">corpXiv:{corpxiv_id} [{category}]</p>
+      <p class="identifier">corpXiv:{corpxiv_id} [{category}]</p>{shortlink_html}
     </article>
   </main>
   
@@ -520,7 +599,8 @@ def add_to_papers_yaml(
     category: str,
     slug: str,
     pdf_filename: str,
-    pdf_hash: str
+    pdf_hash: str,
+    shortlink: str = ""
 ) -> None:
     """Add paper entry to papers.yml."""
     papers = load_papers_yaml()
@@ -534,8 +614,10 @@ def add_to_papers_yaml(
         'slug': slug,
         'abstract': abstract,
         'pdf': pdf_filename,
-        'hash': pdf_hash
+        'hash': pdf_hash,
     }
+    if shortlink:
+        entry['shortlink'] = shortlink
     
     papers.insert(0, entry)  # Newest first
     save_papers_yaml(papers)
@@ -577,15 +659,10 @@ def generate_sitemap() -> None:
 
 def title_to_slug(title: str) -> str:
     """Convert title to URL-friendly slug."""
-    # Normalize unicode
     slug = unicodedata.normalize('NFKD', title)
-    # Lowercase
     slug = slug.lower()
-    # Replace spaces and special chars with hyphens
     slug = re.sub(r'[^a-z0-9]+', '-', slug)
-    # Remove leading/trailing hyphens
     slug = slug.strip('-')
-    # Limit length
     slug = slug[:60]
     return slug
 
@@ -595,7 +672,8 @@ def process_paper(
     category: str,
     title: Optional[str] = None,
     authors: Optional[list[str]] = None,
-    abstract: Optional[str] = None
+    abstract: Optional[str] = None,
+    shortlink: Optional[str] = None
 ) -> dict:
     """
     Full pipeline: extract, validate, stamp, generate.
@@ -619,8 +697,14 @@ def process_paper(
     papers = load_papers_yaml()
     manifest = load_manifest()
     
+    # Resolve shortlink: use provided, or auto-generate from title
+    resolved_shortlink = ''
+    if shortlink:
+        resolved_shortlink = shortlink.lower().strip()
+    # (auto-generation happens after slug is created, below)
+    
     # Validate
-    validation = validate_submission(extraction, filepath, papers, manifest)
+    validation = validate_submission(extraction, filepath, papers, manifest, resolved_shortlink)
     
     if not validation.valid:
         return {
@@ -634,10 +718,17 @@ def process_paper(
     corpxiv_id, date_str = generate_corpxiv_id(manifest, category)
     slug = title_to_slug(extraction.title)
     
+    # If no shortlink provided, use the slug (but only if it's valid and available)
+    if not resolved_shortlink:
+        candidate = slug[:40]
+        sl_check = validate_shortlink(candidate)
+        if sl_check['valid']:
+            resolved_shortlink = candidate
+    
     # Stamp PDF
     stamp_pdf(filepath, corpxiv_id, category, date_str)
     
-    # Generate landing page (nested: category/slug)
+    # Generate landing page
     output_dir = Path('papers') / category / slug
     pdf_filename = f"{slug}.pdf"
     
@@ -650,6 +741,7 @@ def process_paper(
         category=category,
         pdf_filename=pdf_filename,
         slug=slug,
+        shortlink=resolved_shortlink,
         output_dir=output_dir
     )
     
@@ -664,7 +756,8 @@ def process_paper(
         category=category,
         slug=slug,
         pdf_filename=pdf_filename,
-        pdf_hash=pdf_hash
+        pdf_hash=pdf_hash,
+        shortlink=resolved_shortlink
     )
     
     # Update manifest
@@ -677,6 +770,7 @@ def process_paper(
         'status': 'success',
         'corpxiv_id': corpxiv_id,
         'slug': slug,
+        'shortlink': resolved_shortlink,
         'title': extraction.title,
         'authors': extraction.authors,
         'abstract': extraction.abstract,
@@ -692,16 +786,31 @@ def extract_only(filepath: str) -> dict:
     return extraction.to_dict()
 
 
+def validate_shortlink_command(shortlink: str) -> dict:
+    """
+    CLI command: validate a shortlink and also return auto_slug suggestion.
+    Used by extract-metadata workflow before confirmation.
+    """
+    result = validate_shortlink(shortlink) if shortlink else {'valid': True, 'error': None}
+    
+    # If no shortlink provided, we can't suggest an auto_slug without the title,
+    # so we just indicate it will be auto-generated
+    result['auto_slug'] = None
+    
+    return result
+
+
 if __name__ == '__main__':
     import argparse
     
     parser = argparse.ArgumentParser(description='corpXiv paper processor')
-    parser.add_argument('command', choices=['extract', 'process', 'sitemap'])
+    parser.add_argument('command', choices=['extract', 'process', 'sitemap', 'validate-shortlink'])
     parser.add_argument('filepath', nargs='?', help='Path to PDF')
     parser.add_argument('--category', default='other', help='Paper category')
     parser.add_argument('--title', help='Override title')
     parser.add_argument('--authors', help='Override authors (comma-separated)')
     parser.add_argument('--abstract', help='Override abstract')
+    parser.add_argument('--shortlink', default='', help='Preferred shortlink slug')
     
     args = parser.parse_args()
     
@@ -722,9 +831,14 @@ if __name__ == '__main__':
             category=args.category,
             title=args.title,
             authors=authors,
-            abstract=args.abstract
+            abstract=args.abstract,
+            shortlink=args.shortlink or None
         )
         print(json.dumps(result, indent=2))
+    
+    elif args.command == 'validate-shortlink':
+        result = validate_shortlink_command(args.shortlink)
+        print(json.dumps(result))
     
     elif args.command == 'sitemap':
         generate_sitemap()

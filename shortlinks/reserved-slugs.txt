@@ -1,0 +1,16 @@
+# Reserved shortlink names — these cannot be used by paper submissions
+admin
+api
+health
+status
+login
+auth
+submit
+about
+help
+search
+index
+feed
+rss
+sitemap
+robots

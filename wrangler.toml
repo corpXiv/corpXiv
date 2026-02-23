@@ -1,0 +1,11 @@
+name = "corpxiv-shortlinks"
+main = "shortlinks/worker.js"
+compatibility_date = "2024-12-01"
+
+[[kv_namespaces]]
+binding = "LINKS"
+id = "<PASTE_YOUR_KV_NAMESPACE_ID>"
+
+# Uncomment and set your domain once DNS is configured:
+# [triggers]
+# routes = ["go.corpxiv.org/*"]

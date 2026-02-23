@@ -28,6 +28,19 @@ body:
     validations:
       required: true
 
+  - type: input
+    id: shortlink
+    attributes:
+      label: Short link name (optional)
+      description: |
+        Choose a memorable page name for your paper's short URL.
+        Your paper will be accessible at `go.corpxiv.org/your-name-here`.
+        Lowercase letters, numbers, and hyphens only. 3–40 characters.
+        If left blank, we'll generate one from your title.
+      placeholder: "e.g. tau-mdm, semantic-mvcc, seven-verbs"
+    validations:
+      required: false
+
   - type: textarea
     id: pdf
     attributes:
