@@ -1,3 +1,32 @@
+- id: 2603.00019v1
+  title: The Killer Agentic AI Use Case for Banks and Insurers Near-Zero Governance
+    Overhead, Weeks to First Value, and Permanent Market Dominance
+  authors:
+  - Iyer
+  - Rajesh
+  date: '2026-03-31'
+  category: architecture
+  slug: the-killer-agentic-ai-use-case-for-banks-and-insurers-near-z
+  abstract: 'You have never seen your efficient frontier. Every financial in- stitution
+    runs two or three repricing scenarios per cycle, picks the best, and calls it
+    strategy. That is not strategy. That is blind sampling from a surface that has
+    never been mapped. The frontier—the boundary of achievable growth and profitability—exists
+    in every P&C insurance book and every bank credit strategy. No carrier and no
+    bank has ever computed it. The constraint was never analytical capacity. It was
+    architecture. A cache makes it visible. The repricing space is finite and discrete.
+    Identical factor vectors always produce identical outcomes. Compute once, retrieve
+    forever, compute on cache miss. This single architectural move collapses multi-hour
+    runs to minutes. Hundreds of strategies become evaluable where three were the
+    ceiling. The fron- tier emerges for the first time. A five-agent pipeline navigates
+    it: the Explorer reprices the book via the cache, the Shaper projects portfolio
+    composition through demand models at the individual policy level, the Evaluator
+    scores profitability and growth, the Guardian screens for regulatory constraint,
+    and the Orchestrator returns a ranked frontier to the decision-maker. No new models.
+    No regulatory approval. No governance committee. Weeks to first value. Months
+    to full scale. The advantage compounds permanently.'
+  pdf: the-killer-agentic-ai-use-case-for-banks-and-insurers-near-z.pdf
+  hash: 8b404bf35584bc31
+  shortlink: repricing
 - id: 2602.00018v1
   title: 'Beyond Function Equivalence: Method-Equivalence Verification for AI Coding
     Agents and the Explosion of Enterprise Defect Surface'
